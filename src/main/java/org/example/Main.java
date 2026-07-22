@@ -77,7 +77,7 @@ public class Main {
             this.upvote = upvote;
         }
 
-        public Discussion(){
+        public Discussion() {
             this.number = 0;
             this.questionNumber = 0;
             this.questionExam = "";
@@ -123,15 +123,19 @@ public class Main {
             public void setQuestionExam(String questionExam, Discussion discussion) {
                 discussion.setQuestionExam(questionExam);
             }
+
             public void setSelectedAnswer(String selectedAnswer, Discussion discussion) {
                 discussion.setSelectedAnswer(selectedAnswer);
             }
+
             public void setText(String text, Discussion discussion) {
                 discussion.setText(text);
             }
+
             public void setUpvote(int upvote, Discussion discussion) {
                 discussion.setUpvote(upvote);
             }
+
             public Discussion build() {
                 return new Discussion();
             }
@@ -312,14 +316,14 @@ public class Main {
         Document doc = Jsoup.parse(input, "UTF-8");
 
         Question q = Question(1, "oracle", doc);
-         System.out.println(q);
+        System.out.println(q);
 
         List<Answer> a = Answers(1, "oracle", doc);
         for (Answer a1 : a) {
             System.out.println(a1.toString());
         }
 
-        List<Discussion> d=  Discussions(1, "oracle", doc);
+        List<Discussion> d = Discussions(1, "oracle", doc);
         for (Discussion discussion : d) {
             System.out.println(discussion);
         }
