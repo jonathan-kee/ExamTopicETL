@@ -33,7 +33,7 @@ public class Main {
         }
     }
 
-    static class Answer {
+    static public class Answer {
         private int number;
         private int questionNumber;
         private String questionExam;
@@ -48,6 +48,26 @@ public class Main {
             this.isCorrect = isCorrect;
         }
 
+        public int getNumber() {
+            return number;
+        }
+
+        public int getQuestionNumber() {
+            return questionNumber;
+        }
+
+        public String getQuestionExam() {
+            return questionExam;
+        }
+
+        public String getText() {
+            return text;
+        }
+
+        public boolean isCorrect() {
+            return isCorrect;
+        }
+
         @Override
         public String toString() {
             return "Answer{" +
@@ -57,6 +77,33 @@ public class Main {
                     ", text='" + text + '\'' +
                     ", isCorrect=" + isCorrect +
                     '}';
+        }
+
+        public static String insert(List<Answer> answers) {
+            String insertBoilerPlate = """
+                    INSERT INTO browerless.answers
+                    (number, question_number, question_exam, text, is_correct)
+                    VALUES
+                    """;
+
+            List<String> data = answers.stream().map(answer-> {
+                return "(" + answer.getNumber() + ","
+                        + answer.getQuestionNumber() + ","
+                        + answer.getQuestionExam() + ","
+                        + answer.getText() + ","
+                        + answer.isCorrect() + ")";
+            }).toList();
+
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0; i < data.size(); i++){
+                if( i != data.size()-1 ){
+                    sb.append(data.get(i)+",\n");
+                } else
+                    sb.append(data.get(i)+";");
+            }
+
+            String fullInsert = insertBoilerPlate + sb.toString();
+            return fullInsert;
         }
     }
 
@@ -316,17 +363,20 @@ public class Main {
         Document doc = Jsoup.parse(input, "UTF-8");
 
         Question q = Question(1, "oracle", doc);
-        System.out.println(q);
+        // System.out.println(q);
 
         List<Answer> a = Answers(1, "oracle", doc);
-        for (Answer a1 : a) {
-            System.out.println(a1.toString());
-        }
+//        for (Answer a1 : a) {
+//            System.out.println(a1.toString());
+//        }
+
+        String insert = Answer.insert(a);
+        System.out.println(insert);
 
         List<Discussion> d = Discussions(1, "oracle", doc);
-        for (Discussion discussion : d) {
-            System.out.println(discussion);
-        }
+//        for (Discussion discussion : d) {
+//            System.out.println(discussion);
+//        }
     }
 }
 
