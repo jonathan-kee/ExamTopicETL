@@ -81,7 +81,7 @@ public class Main {
 
         public static String insert(List<Answer> answers) {
             String insertBoilerPlate = """
-                    INSERT INTO browerless.answers
+                    INSERT INTO browserless.answers
                     (number, question_number, question_exam, text, is_correct)
                     VALUES
                     """;
@@ -157,36 +157,28 @@ public class Main {
             this.upvote = upvote;
         }
 
-        static class Builder {
+        public int getNumber() {
+            return number;
+        }
 
-            public void setQuestionNumber(int questionNumber, Discussion discussion) {
-                discussion.setQuestionNumber(questionNumber);
-            }
+        public int getQuestionNumber() {
+            return questionNumber;
+        }
 
-            public void setNumber(int number, Discussion discussion) {
-                discussion.setNumber(number);
-            }
+        public String getQuestionExam() {
+            return questionExam;
+        }
 
-            public void setQuestionExam(String questionExam, Discussion discussion) {
-                discussion.setQuestionExam(questionExam);
-            }
+        public String getSelectedAnswer() {
+            return selectedAnswer;
+        }
 
-            public void setSelectedAnswer(String selectedAnswer, Discussion discussion) {
-                discussion.setSelectedAnswer(selectedAnswer);
-            }
+        public String getText() {
+            return text;
+        }
 
-            public void setText(String text, Discussion discussion) {
-                discussion.setText(text);
-            }
-
-            public void setUpvote(int upvote, Discussion discussion) {
-                discussion.setUpvote(upvote);
-            }
-
-            public Discussion build() {
-                return new Discussion();
-            }
-
+        public int getUpvote() {
+            return upvote;
         }
 
         @Override
@@ -199,6 +191,33 @@ public class Main {
                     ", text='" + text + '\'' +
                     ", upvote=" + upvote +
                     '}';
+        }
+
+        public static String insert(List<Discussion> dicussions) {
+            String insertBoilerPlate = """
+                    INSERT INTO browserless.discussions
+                    (number, question_number, question_exam, selected_answer, text, upvote)
+                    VALUES
+                    """;
+
+            List<String> data = dicussions.stream().map(dicussion-> {
+                return "(" + dicussion.getNumber() + ","
+                        + dicussion.getQuestionNumber() + ","
+                        + dicussion.getQuestionExam() + ","
+                        + dicussion.getText() + ","
+                        + dicussion.getUpvote() + ")";
+            }).toList();
+
+            StringBuilder sb = new StringBuilder();
+            for(int i = 0; i < data.size(); i++){
+                if( i != data.size()-1 ){
+                    sb.append(data.get(i)+",\n");
+                } else
+                    sb.append(data.get(i)+";");
+            }
+
+            String fullInsert = insertBoilerPlate + sb.toString();
+            return fullInsert;
         }
     }
 
@@ -370,13 +389,16 @@ public class Main {
 //            System.out.println(a1.toString());
 //        }
 
-        String insert = Answer.insert(a);
-        System.out.println(insert);
+        String insertAnswer = Answer.insert(a);
+        // System.out.println(insertAnswer);
 
         List<Discussion> d = Discussions(1, "oracle", doc);
 //        for (Discussion discussion : d) {
 //            System.out.println(discussion);
 //        }
+
+        String insertDiscussion = Discussion.insert(d);
+        System.out.println(insertDiscussion);
     }
 }
 
