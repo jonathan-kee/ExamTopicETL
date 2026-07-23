@@ -8,9 +8,13 @@ import org.postgresql.util.PSQLException;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 // https://scrapfly.io/blog/posts/web-scraping-java-jsoup-html-parsing
 public class Main {
@@ -519,18 +523,18 @@ public class Main {
     }
 
     private static void multipleDocuments() throws IOException, SQLException {
-        String[] paths = {
-                "/Users/jonathankee/examTopicScraper/document/Document1.html",
-                "/Users/jonathankee/examTopicScraper/document/Document2.html",
-                "/Users/jonathankee/examTopicScraper/document/Document3.html",
-                "/Users/jonathankee/examTopicScraper/document/Document4.html",
-                "/Users/jonathankee/examTopicScraper/document/Document5.html"
-        };
-
+        Path folderPath = Paths.get("/Users/jonathankee/examTopicScraper/document");
         List<File> files = new ArrayList<>();
-        for (String path : paths) {
-            File file = new File(path);
-            files.add(file);
+
+        try (Stream<Path> paths = Files.list(folderPath)) {
+            paths.forEach(path -> {
+                System.out.println(path.toAbsolutePath());
+                File file = new File(path.toAbsolutePath().toString());
+                files.add(file);
+            }
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         List<Question> questions = new ArrayList<>();
@@ -540,7 +544,7 @@ public class Main {
         for (int i = 0; i < files.size(); i++) {
             Document doc = Jsoup.parse(files.get(i), "UTF-8");
             // +1 to make sure follow normal numbering
-            scrapeMultipleDocuments(doc, i+1, questions, answers, discussions);
+            scrapeMultipleDocuments(doc, i + 1, questions, answers, discussions);
         }
 
         List<Answer> allAnswers = answers.stream()
