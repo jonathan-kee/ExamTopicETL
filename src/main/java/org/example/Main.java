@@ -38,7 +38,7 @@ public class Main {
                     INSERT INTO browserless_questions
                     (number, exam, text)
                     VALUES
-                    (%s,%s,%s);
+                    (%d,'%s','%s');
                     """.formatted(question.number, question.exam, question.text);
             return insert;
         }
@@ -100,8 +100,8 @@ public class Main {
             List<String> data = answers.stream().map(answer -> {
                 return "(" + answer.getNumber() + ","
                         + answer.getQuestionNumber() + ","
-                        + answer.getQuestionExam() + ","
-                        + answer.getText() + ","
+                        +"'"+ answer.getQuestionExam()+"'" + ","
+                        +"'"+ answer.getText()+"'" + ","
                         + answer.isCorrect() + ")";
             }).toList();
 
@@ -214,8 +214,8 @@ public class Main {
             List<String> data = dicussions.stream().map(dicussion -> {
                 return "(" + dicussion.getNumber() + ","
                         + dicussion.getQuestionNumber() + ","
-                        + dicussion.getQuestionExam() + ","
-                        + dicussion.getText() + ","
+                        +"'"+ dicussion.getQuestionExam() + ","
+                        +"'"+ dicussion.getText() + ","
                         + dicussion.getUpvote() + ")";
             }).toList();
 
