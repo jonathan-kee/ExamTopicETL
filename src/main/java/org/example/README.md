@@ -27,3 +27,11 @@ source package name: com.gradlelab
 [Gradle Init result](./screenshots/gradleinit.png)
 
 ![Gradle Init result](./screenshots/gradleinit.png)
+
+[Gradle w command](./screenshots/gradlewCommand.png)
+
+![Gradle w command](./screenshots/gradlewCommand.png)
+
+[Java related Plugins](./screenshots/JavaRelatedPlugins.png)
+
+![Java related Plugins](./screenshots/JavaRelatedPlugins.png)
