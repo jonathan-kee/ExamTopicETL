@@ -427,15 +427,33 @@ public class Main {
         }
     }
 
-    private static void insertJdbc(String insert) throws SQLException {
+    private static void executeQueryJdbc(String sql) throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/postgres";
         try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
-             ResultSet rs = conn.createStatement().executeQuery(insert)) {
+             ResultSet rs = conn.createStatement().executeQuery(sql)) {
 
         } catch (PSQLException e) {
             e.printStackTrace();
             // Do nothing with no result because inserting data
         }
+    }
+
+    private static void scrapeSingleDocument(Document doc) throws SQLException {
+        // Clear existing data
+        executeQueryJdbc("truncate browserless_answers;");
+        executeQueryJdbc("truncate browserless_discussions;");
+
+        Question q = Question(1, "1z0-071", doc);
+        String insertQuestion = Question.insert(q);
+        executeQueryJdbc(insertQuestion);
+
+        List<Answer> a = Answers(1, "1z0-071", doc);
+        String insertAnswer = Answer.insert(a);
+        executeQueryJdbc(insertAnswer);
+
+        List<Discussion> d = Discussions(1, "1z0-071", doc);
+        String insertDiscussion = Discussion.insert(d);
+        executeQueryJdbc(insertDiscussion);
     }
 
     public static void main(String[] args) throws IOException, SQLException {
@@ -445,29 +463,7 @@ public class Main {
         // 2. Specify the File and character encoding (usually "UTF-8")
         Document doc = Jsoup.parse(input, "UTF-8");
 
-        Question q = Question(1, "1z0-071", doc);
-        // System.out.println(q);
-        // String insertQuestion = Question.insert(q);
-        // System.out.println(insertQuestion);
-        // insertJdbc(insertQuestion);
-
-        List<Answer> a = Answers(1, "1z0-071", doc);
-//        for (Answer a1 : a) {
-//            System.out.println(a1.toString());
-//        }
-
-        String insertAnswer = Answer.insert(a);
-        // System.out.println(insertAnswer);
-        // insertJdbc(insertAnswer);
-
-        List<Discussion> d = Discussions(1, "1z0-071", doc);
-//        for (Discussion discussion : d) {
-//            System.out.println(discussion);
-//        }
-
-        String insertDiscussion = Discussion.insert(d);
-        System.out.println(insertDiscussion);
-        insertJdbc(insertDiscussion);
+        scrapeSingleDocument(doc);
     }
 }
 
