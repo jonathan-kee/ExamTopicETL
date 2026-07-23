@@ -237,11 +237,13 @@ public class Main {
                 // Replace ' with '' so SQL syntax doesn't break
                 String safeText1 = dicussion.getQuestionExam() != null ? dicussion.getQuestionExam().replace("'", "''") : "";
                 String safeText2 = dicussion.getText() != null ? dicussion.getText().replace("'", "''") : "";
+                String safeText3 = dicussion.getSelectedAnswer() != null ? dicussion.getSelectedAnswer().replace("'", "''") : "";
 
                 return "(" + dicussion.getNumber() + ","
                         + dicussion.getQuestionNumber() + ","
                         + "'" + safeText1 + "'" + ","
                         + "'" + safeText2 + "'" + ","
+                        + "'" + safeText3 + "'" + ","
                         + dicussion.getUpvote() + ")";
             }).toList();
 
