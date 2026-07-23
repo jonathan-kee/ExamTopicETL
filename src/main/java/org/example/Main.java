@@ -46,7 +46,7 @@ public class Main {
                     '}';
         }
 
-        public static String insert(Question question) {
+        public static String insertSingle(Question question) {
             // Replace ' with '' so SQL syntax doesn't break
             String safeText1 = question.getExam() != null ? question.getExam().replace("'", "''") : "";
             String safeText2 = question.getText() != null ? question.getText().replace("'", "''") : "";
@@ -107,7 +107,7 @@ public class Main {
                     '}';
         }
 
-        public static String insert(List<Answer> answers) {
+        public static String insertSingle(List<Answer> answers) {
             String insertBoilerPlate = """
                     INSERT INTO browserless_answers
                     (number, question_number, question_exam, text, is_correct)
@@ -226,7 +226,7 @@ public class Main {
                     '}';
         }
 
-        public static String insert(List<Discussion> dicussions) {
+        public static String insertSingle(List<Discussion> dicussions) {
             String insertBoilerPlate = """
                     INSERT INTO browserless_discussions
                     (number, question_number, question_exam, selected_answer, text, upvote)
@@ -444,16 +444,24 @@ public class Main {
         executeQueryJdbc("truncate browserless_discussions;");
 
         Question q = Question(1, "1z0-071", doc);
-        String insertQuestion = Question.insert(q);
+        String insertQuestion = Question.insertSingle(q);
         executeQueryJdbc(insertQuestion);
 
         List<Answer> a = Answers(1, "1z0-071", doc);
-        String insertAnswer = Answer.insert(a);
+        String insertAnswer = Answer.insertSingle(a);
         executeQueryJdbc(insertAnswer);
 
         List<Discussion> d = Discussions(1, "1z0-071", doc);
-        String insertDiscussion = Discussion.insert(d);
+        String insertDiscussion = Discussion.insertSingle(d);
         executeQueryJdbc(insertDiscussion);
+    }
+
+    private static void scrapeMultipleDocuments(Document doc) throws SQLException {
+        // Clear existing data
+        executeQueryJdbc("truncate browserless_answers;");
+        executeQueryJdbc("truncate browserless_discussions;");
+
+
     }
 
     public static void main(String[] args) throws IOException, SQLException {
@@ -464,6 +472,21 @@ public class Main {
         Document doc = Jsoup.parse(input, "UTF-8");
 
         scrapeSingleDocument(doc);
+
+        String[] paths = {
+                "/Users/jonathankee/examTopicScraper/document/Document1.html",
+                "/Users/jonathankee/examTopicScraper/document/Document2.html",
+                "/Users/jonathankee/examTopicScraper/document/Document3.html",
+                "/Users/jonathankee/examTopicScraper/document/Document4.html",
+                "/Users/jonathankee/examTopicScraper/document/Document5.html"
+        };
+
+        List<File> files = new ArrayList<>();
+        for (String path : paths) {
+            File file = new File(path);
+            files.add(file);
+        }
+
     }
 }
 
