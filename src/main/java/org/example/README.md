@@ -1,3 +1,14 @@
+# Install SDKman
+Link:
+https://sdkman.io/install/
+
+MacOS installation:
+curl -s "https://get.sdkman.io" | zsh
+
+For Gradle compatibility:
+sdk install java 21.0.2-open
+java -version
+
 # Learn Gradle
 ## Introduction to Gradle for Developers Prerequisites
 Link:
@@ -35,3 +46,18 @@ source package name: com.gradlelab
 [Java related Plugins](./screenshots/JavaRelatedPlugins.png)
 
 ![Java related Plugins](./screenshots/JavaRelatedPlugins.png)
+
+./gradlew tasks --all
+
+add gradle.properties file to make .gradlew command output more information
+
+[tasks concepts](./screenshots/tasksConcepts.png)
+
+![tasks conceptss](./screenshots/tasksConcepts.png)
+
+./gradlew :compileJava
+./gradlew :cleanCompileJava
+
+[different dependencies](./screenshots/differentDependencies.png)
+
+![[different dependencies](./screenshots/differentDependencies.png)
