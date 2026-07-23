@@ -1,0 +1,29 @@
+# Learn Gradle
+## Introduction to Gradle for Developers Prerequisites
+Link:
+https://dpeuniversity.gradle.com/learning_paths/1a2955ed-499e-45e3-af54-9babd8427972/courses/012de84f-fcd3-45d4-9c4c-284382eb3f3f/activities/3dd8606c-d436-4962-bb02-0f8c613ab5db
+
+Link:
+https://dpeuniversity.gradle.com/learning_paths/1a2955ed-499e-45e3-af54-9babd8427972/courses/012de84f-fcd3-45d4-9c4c-284382eb3f3f/activities/8450493b-7c4f-498d-9fe4-f3acd1af323a
+
+There are two files
+- settings.gradle.kts
+- build.gradle.kts
+
+Command to start a gradle project
+- gradle init
+
+If we are building an executable app, pick 2:application
+If we are creating a library that will be used by others, pick 3:library
+If we are building gradle plugin to offer more functionality, pick 4:gradle plugin
+If we pick 1: basic, this gradle will create a basic layout and configuration, this is the default option
+
+if we are asked how many subprojects will be in our application, we will specify "no" to indicate only 1
+
+For the demo video:
+project name: calc
+source package name: com.gradlelab
+
+[Gradle Init result](./screenshots/gradleinit.png)
+
+![Gradle Init result](./screenshots/gradleinit.png)
