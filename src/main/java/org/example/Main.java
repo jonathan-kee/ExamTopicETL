@@ -10,6 +10,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 // https://scrapfly.io/blog/posts/web-scraping-java-jsoup-html-parsing
 public class Main {
@@ -59,6 +60,35 @@ public class Main {
                     """.formatted(question.number, safeText1, safeText2);
             return insert;
         }
+
+        public static String insertMultiple(List<Question> questions) {
+            String insertBoilerPlate = """
+                    INSERT INTO browserless_questions
+                    (number, exam, text)
+                    VALUES
+                    """;
+
+            List<String> data = questions.stream().map(question -> {
+                // Replace ' with '' so SQL syntax doesn't break
+                String safeText1 = question.getExam() != null ? question.getExam().replace("'", "''") : "";
+                String safeText2 = question.getText() != null ? question.getText().replace("'", "''") : "";
+
+                return "(" + question.getNumber() + ","
+                        + "'" + safeText1 + "'" + ","
+                        + "'" + safeText2 + "'" + ")";
+            }).toList();
+
+            StringBuilder sb = new StringBuilder();
+            for (int i = 0; i < data.size(); i++) {
+                if (i != data.size() - 1) {
+                    sb.append(data.get(i) + ",\n");
+                } else
+                    sb.append(data.get(i) + ";");
+            }
+
+            String fullInsert = insertBoilerPlate + sb.toString();
+            return fullInsert;
+        }
     }
 
     static public class Answer {
@@ -107,7 +137,7 @@ public class Main {
                     '}';
         }
 
-        public static String insertSingle(List<Answer> answers) {
+        public static String insertMultiple(List<Answer> answers) {
             String insertBoilerPlate = """
                     INSERT INTO browserless_answers
                     (number, question_number, question_exam, text, is_correct)
@@ -226,7 +256,7 @@ public class Main {
                     '}';
         }
 
-        public static String insertSingle(List<Discussion> dicussions) {
+        public static String insertMultiple(List<Discussion> dicussions) {
             String insertBoilerPlate = """
                     INSERT INTO browserless_discussions
                     (number, question_number, question_exam, selected_answer, text, upvote)
@@ -448,23 +478,37 @@ public class Main {
         executeQueryJdbc(insertQuestion);
 
         List<Answer> a = Answers(1, "1z0-071", doc);
-        String insertAnswer = Answer.insertSingle(a);
+        String insertAnswer = Answer.insertMultiple(a);
         executeQueryJdbc(insertAnswer);
 
         List<Discussion> d = Discussions(1, "1z0-071", doc);
-        String insertDiscussion = Discussion.insertSingle(d);
+        String insertDiscussion = Discussion.insertMultiple(d);
         executeQueryJdbc(insertDiscussion);
     }
 
-    private static void scrapeMultipleDocuments(Document doc) throws SQLException {
+    // This function does not execute jdbc query
+    private static void scrapeMultipleDocuments(Document doc,
+                                                int number,
+                                                List<Question> multipleQuestion,
+                                                List<List<Answer>> multipleAnswer,
+                                                List<List<Discussion>> multipleDiscussion) throws SQLException {
         // Clear existing data
         executeQueryJdbc("truncate browserless_answers;");
         executeQueryJdbc("truncate browserless_discussions;");
 
+        Question q = Question(number, "1z0-071", doc);
+        multipleQuestion.add(q);
 
+        // Actually this is flatmap operation
+        List<Answer> a = Answers(number, "1z0-071", doc);
+        multipleAnswer.add(a);
+
+        // Actually this is flatmap operation
+        List<Discussion> d = Discussions(number, "1z0-071", doc);
+        multipleDiscussion.add(d);
     }
 
-    public static void main(String[] args) throws IOException, SQLException {
+    private static void singleDocument() throws SQLException, IOException {
         // 1. Pass a File object instead of a raw String
         File input = new File("/Users/jonathankee/examTopicScraper/document/TestDocument.html");
 
@@ -472,7 +516,9 @@ public class Main {
         Document doc = Jsoup.parse(input, "UTF-8");
 
         scrapeSingleDocument(doc);
+    }
 
+    private static void multipleDocuments() throws IOException, SQLException {
         String[] paths = {
                 "/Users/jonathankee/examTopicScraper/document/Document1.html",
                 "/Users/jonathankee/examTopicScraper/document/Document2.html",
@@ -486,6 +532,39 @@ public class Main {
             File file = new File(path);
             files.add(file);
         }
+
+        List<Question> questions = new ArrayList<>();
+        List<List<Answer>> answers = new ArrayList<>();
+        List<List<Discussion>> discussions = new ArrayList<>();
+
+        for (int i = 0; i < files.size(); i++) {
+            Document doc = Jsoup.parse(files.get(i), "UTF-8");
+            scrapeMultipleDocuments(doc, i, questions, answers, discussions);
+        }
+
+        List<Answer> allAnswers = answers.stream()
+                .flatMap(List::stream) // Flattens Stream<List<Question>> into Stream<Question>
+                .collect(Collectors.toList());
+
+        List<Discussion> allDicussion = discussions.stream()
+                .flatMap(List::stream) // Flattens Stream<List<Question>> into Stream<Question>
+                .collect(Collectors.toList());
+
+        executeQueryJdbc("truncate browserless_answers;");
+        executeQueryJdbc("truncate browserless_discussions;");
+
+        String insertQuestions = Question.insertMultiple(questions);
+        executeQueryJdbc(insertQuestions);
+
+        String insertAnswers = Answer.insertMultiple(allAnswers);
+        executeQueryJdbc(insertAnswers);
+
+        String insertDiscussions = Discussion.insertMultiple(allDicussion);
+        executeQueryJdbc(insertDiscussions);
+    }
+
+    public static void main(String[] args) {
+
 
     }
 }
