@@ -15,6 +15,10 @@ java -version
 java -jar build/libs/static_page-1.0-SNAPSHOT-all.jar
 
 # Learn Gradle
+## More resource on Gradle
+Link:
+https://koge.2bab.com/
+
 ## Introduction to Gradle for Developers Prerequisites
 Link:
 https://dpeuniversity.gradle.com/learning_paths/1a2955ed-499e-45e3-af54-9babd8427972/courses/012de84f-fcd3-45d4-9c4c-284382eb3f3f/activities/3dd8606c-d436-4962-bb02-0f8c613ab5db
