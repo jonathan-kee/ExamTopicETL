@@ -35,7 +35,7 @@ public class Main {
 
         public static String insert(Question question) {
             String insert = """
-                    INSERT INTO browserless.questions
+                    INSERT INTO browserless_questions
                     (number, exam, text)
                     VALUES
                     (%s,%s,%s);
@@ -92,7 +92,7 @@ public class Main {
 
         public static String insert(List<Answer> answers) {
             String insertBoilerPlate = """
-                    INSERT INTO browserless.answers
+                    INSERT INTO browserless_answers
                     (number, question_number, question_exam, text, is_correct)
                     VALUES
                     """;
@@ -206,7 +206,7 @@ public class Main {
 
         public static String insert(List<Discussion> dicussions) {
             String insertBoilerPlate = """
-                    INSERT INTO browserless.discussions
+                    INSERT INTO browserless_discussions
                     (number, question_number, question_exam, selected_answer, text, upvote)
                     VALUES
                     """;
