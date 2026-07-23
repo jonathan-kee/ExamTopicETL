@@ -3,16 +3,20 @@ Link:
 https://sdkman.io/install/
 
 MacOS installation:
-curl -s "https://get.sdkman.io" | zsh
+- curl -s "https://get.sdkman.io" | zsh
 
 For Gradle compatibility:
-sdk install java 21.0.2-open
-java -version
+- sdk install java 21.0.2-open
+- java -version
+
+# Java Networking resource
+Link:
+https://github.com/PrashDev425/network-programming
 
 # Clean Build folder, Compile Fat Jar and Run it
-./gradlew clean
-./gradlew shadowJar
-java -jar build/libs/static_page-1.0-SNAPSHOT-all.jar
+- ./gradlew clean
+- ./gradlew shadowJar
+- java -jar build/libs/static_page-1.0-SNAPSHOT-all.jar
 
 # Learn Gradle
 ## More resource on Gradle
@@ -56,7 +60,7 @@ source package name: com.gradlelab
 
 ![Java related Plugins](./screenshots/JavaRelatedPlugins.png)
 
-./gradlew tasks --all
+- ./gradlew tasks --all
 
 add gradle.properties file to make .gradlew command output more information
 
@@ -64,9 +68,9 @@ add gradle.properties file to make .gradlew command output more information
 
 ![tasks conceptss](./screenshots/tasksConcepts.png)
 
-./gradlew :compileJava
-./gradlew :cleanCompileJava
+- ./gradlew :compileJava
+- ./gradlew :cleanCompileJava
 
 [different dependencies](./screenshots/differentDependencies.png)
 
-![[different dependencies](./screenshots/differentDependencies.png)
+![different dependencies](./screenshots/differentDependencies.png)
