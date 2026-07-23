@@ -7,6 +7,7 @@ import org.jsoup.select.Elements;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.*;
 import java.util.*;
 
 // https://scrapfly.io/blog/posts/web-scraping-java-jsoup-html-parsing
@@ -96,7 +97,7 @@ public class Main {
                     VALUES
                     """;
 
-            List<String> data = answers.stream().map(answer-> {
+            List<String> data = answers.stream().map(answer -> {
                 return "(" + answer.getNumber() + ","
                         + answer.getQuestionNumber() + ","
                         + answer.getQuestionExam() + ","
@@ -105,11 +106,11 @@ public class Main {
             }).toList();
 
             StringBuilder sb = new StringBuilder();
-            for(int i = 0; i < data.size(); i++){
-                if( i != data.size()-1 ){
-                    sb.append(data.get(i)+",\n");
+            for (int i = 0; i < data.size(); i++) {
+                if (i != data.size() - 1) {
+                    sb.append(data.get(i) + ",\n");
                 } else
-                    sb.append(data.get(i)+";");
+                    sb.append(data.get(i) + ";");
             }
 
             String fullInsert = insertBoilerPlate + sb.toString();
@@ -210,7 +211,7 @@ public class Main {
                     VALUES
                     """;
 
-            List<String> data = dicussions.stream().map(dicussion-> {
+            List<String> data = dicussions.stream().map(dicussion -> {
                 return "(" + dicussion.getNumber() + ","
                         + dicussion.getQuestionNumber() + ","
                         + dicussion.getQuestionExam() + ","
@@ -219,11 +220,11 @@ public class Main {
             }).toList();
 
             StringBuilder sb = new StringBuilder();
-            for(int i = 0; i < data.size(); i++){
-                if( i != data.size()-1 ){
-                    sb.append(data.get(i)+",\n");
+            for (int i = 0; i < data.size(); i++) {
+                if (i != data.size() - 1) {
+                    sb.append(data.get(i) + ",\n");
                 } else
-                    sb.append(data.get(i)+";");
+                    sb.append(data.get(i) + ";");
             }
 
             String fullInsert = insertBoilerPlate + sb.toString();
@@ -384,7 +385,21 @@ public class Main {
         return discussions;
     }
 
-    public static void main(String[] args) throws IOException {
+    private static void jdbc() throws SQLException {
+        String url = "jdbc:postgresql://localhost:5432/postgres";
+        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
+             PreparedStatement ps = conn.prepareStatement(
+                     "SELECT * FROM questions");
+             ResultSet rs = ps.executeQuery()) {
+            while (rs.next()){
+                System.out.println(rs.getString(1));
+                System.out.println(rs.getString(2));
+                System.out.println(rs.getString(3));
+            }
+        }
+    }
+
+    public static void main(String[] args) throws IOException, SQLException {
         // 1. Pass a File object instead of a raw String
         File input = new File("/Users/jonathankee/examTopicScraper/document/TestDocument.html");
 
@@ -411,6 +426,8 @@ public class Main {
 
         String insertDiscussion = Discussion.insert(d);
         // System.out.println(insertDiscussion);
+
+        jdbc();
     }
 }
 
