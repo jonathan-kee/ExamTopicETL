@@ -31,6 +31,16 @@ public class Main {
                     ", text='" + text + '\'' +
                     '}';
         }
+
+        public static String insert(Question question) {
+            String insert = """
+                    INSERT INTO browserless.questions
+                    (number, exam, text)
+                    VALUES
+                    (%s,%s,%s);
+                    """.formatted(question.number, question.exam, question.text);
+            return insert;
+        }
     }
 
     static public class Answer {
@@ -383,6 +393,8 @@ public class Main {
 
         Question q = Question(1, "oracle", doc);
         // System.out.println(q);
+        String insertQuestion = Question.insert(q);
+        // System.out.println(insertQuestion);
 
         List<Answer> a = Answers(1, "oracle", doc);
 //        for (Answer a1 : a) {
@@ -398,7 +410,7 @@ public class Main {
 //        }
 
         String insertDiscussion = Discussion.insert(d);
-        System.out.println(insertDiscussion);
+        // System.out.println(insertDiscussion);
     }
 }
 
