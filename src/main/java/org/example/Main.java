@@ -385,17 +385,26 @@ public class Main {
         return discussions;
     }
 
-    private static void jdbc() throws SQLException {
+    private static void testJdbc() throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/postgres";
         try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
              PreparedStatement ps = conn.prepareStatement(
                      "SELECT * FROM questions");
              ResultSet rs = ps.executeQuery()) {
-            while (rs.next()){
+            while (rs.next()) {
                 System.out.println(rs.getString(1));
                 System.out.println(rs.getString(2));
                 System.out.println(rs.getString(3));
             }
+        }
+    }
+
+    private static void insertJdbc(String insert) throws SQLException {
+        String url = "jdbc:postgresql://localhost:5432/postgres";
+        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
+             PreparedStatement ps = conn.prepareStatement(
+                     insert);
+             ResultSet rs = ps.executeQuery()) {
         }
     }
 
@@ -410,6 +419,7 @@ public class Main {
         // System.out.println(q);
         String insertQuestion = Question.insert(q);
         // System.out.println(insertQuestion);
+        insertJdbc(insertQuestion);
 
         List<Answer> a = Answers(1, "oracle", doc);
 //        for (Answer a1 : a) {
@@ -426,8 +436,6 @@ public class Main {
 
         String insertDiscussion = Discussion.insert(d);
         // System.out.println(insertDiscussion);
-
-        jdbc();
     }
 }
 
