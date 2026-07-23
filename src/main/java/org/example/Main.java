@@ -25,6 +25,18 @@ public class Main {
             this.text = text;
         }
 
+        public int getNumber() {
+            return number;
+        }
+
+        public String getExam() {
+            return exam;
+        }
+
+        public String getText() {
+            return text;
+        }
+
         @Override
         public String toString() {
             return "Question{" +
@@ -35,12 +47,16 @@ public class Main {
         }
 
         public static String insert(Question question) {
+            // Replace ' with '' so SQL syntax doesn't break
+            String safeText1 = question.getExam() != null ? question.getExam().replace("'", "''") : "";
+            String safeText2 = question.getText() != null ? question.getText().replace("'", "''") : "";
+
             String insert = """
                     INSERT INTO browserless_questions
                     (number, exam, text)
                     VALUES
                     (%d,'%s','%s');
-                    """.formatted(question.number, question.exam, question.text);
+                    """.formatted(question.number, safeText1, safeText2);
             return insert;
         }
     }
@@ -98,11 +114,16 @@ public class Main {
                     VALUES
                     """;
 
+
             List<String> data = answers.stream().map(answer -> {
+                // Replace ' with '' so SQL syntax doesn't break
+                String safeText1 = answer.getQuestionExam() != null ? answer.getQuestionExam().replace("'", "''") : "";
+                String safeText2 = answer.getText() != null ? answer.getText().replace("'", "''") : "";
+
                 return "(" + answer.getNumber() + ","
                         + answer.getQuestionNumber() + ","
-                        +"'"+ answer.getQuestionExam()+"'" + ","
-                        +"'"+ answer.getText()+"'" + ","
+                        + "'" + safeText1 + "'" + ","
+                        + "'" + safeText2 + "'" + ","
                         + answer.isCorrect() + ")";
             }).toList();
 
@@ -213,10 +234,14 @@ public class Main {
                     """;
 
             List<String> data = dicussions.stream().map(dicussion -> {
+                // Replace ' with '' so SQL syntax doesn't break
+                String safeText1 = dicussion.getQuestionExam() != null ? dicussion.getQuestionExam().replace("'", "''") : "";
+                String safeText2 = dicussion.getText() != null ? dicussion.getText().replace("'", "''") : "";
+
                 return "(" + dicussion.getNumber() + ","
                         + dicussion.getQuestionNumber() + ","
-                        +"'"+ dicussion.getQuestionExam() + ","
-                        +"'"+ dicussion.getText() + ","
+                        + "'" + safeText1 + "'" + ","
+                        + "'" + safeText2 + "'" + ","
                         + dicussion.getUpvote() + ")";
             }).toList();
 
@@ -405,7 +430,8 @@ public class Main {
         try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
              ResultSet rs = conn.createStatement().executeQuery(insert)) {
 
-        } catch (PSQLException e){
+        } catch (PSQLException e) {
+            e.printStackTrace();
             // Do nothing with no result because inserting data
         }
     }
@@ -419,25 +445,27 @@ public class Main {
 
         Question q = Question(1, "1z0-071", doc);
         // System.out.println(q);
-        String insertQuestion = Question.insert(q);
-        System.out.println(insertQuestion);
-        insertJdbc(insertQuestion);
+        // String insertQuestion = Question.insert(q);
+        // System.out.println(insertQuestion);
+        // insertJdbc(insertQuestion);
 
-        List<Answer> a = Answers(1, "oracle", doc);
+        List<Answer> a = Answers(1, "1z0-071", doc);
 //        for (Answer a1 : a) {
 //            System.out.println(a1.toString());
 //        }
 
         String insertAnswer = Answer.insert(a);
         // System.out.println(insertAnswer);
+        // insertJdbc(insertAnswer);
 
-        List<Discussion> d = Discussions(1, "oracle", doc);
+        List<Discussion> d = Discussions(1, "1z0-071", doc);
 //        for (Discussion discussion : d) {
 //            System.out.println(discussion);
 //        }
 
         String insertDiscussion = Discussion.insert(d);
-        // System.out.println(insertDiscussion);
+        System.out.println(insertDiscussion);
+        insertJdbc(insertDiscussion);
     }
 }
 
