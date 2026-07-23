@@ -9,6 +9,11 @@ For Gradle compatibility:
 sdk install java 21.0.2-open
 java -version
 
+# Clean Build folder, Compile Fat Jar and Run it
+./gradlew clean
+./gradlew shadowJar
+java -jar build/libs/static_page-1.0-SNAPSHOT-all.jar
+
 # Learn Gradle
 ## Introduction to Gradle for Developers Prerequisites
 Link:
