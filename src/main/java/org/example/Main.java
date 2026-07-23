@@ -589,6 +589,25 @@ public class Main {
 
     public static void main(String[] args) throws SQLException, IOException {
         // multipleDocuments();
+        class Tuple {
+            String fileName;
+            String url;
+            public Tuple(String fileName, String url) {
+                this.fileName = fileName;
+                this.url = url;
+            }
+
+            public String getFileName() {
+                return fileName;
+            }
+
+            public String getUrl() {
+                return url;
+            }
+        }
+
+        new Tuple("document1.html", "https://www.examtopics.com/discussions/oracle/view/79888-exam-1z0-071-topic-1-question-1-discussion/");
+        new Tuple("document2.html", "https://www.examtopics.com/discussions/oracle/view/79530-exam-1z0-071-topic-1-question-2-discussion/");
         downloadDocument();
     }
 
