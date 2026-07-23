@@ -6,8 +6,9 @@ import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
 import org.postgresql.util.PSQLException;
 
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -587,7 +588,44 @@ public class Main {
     }
 
     public static void main(String[] args) throws SQLException, IOException {
-        multipleDocuments();
+        // multipleDocuments();
+        downloadDocument();
+    }
+
+    private static void downloadDocument(){
+        String urlString = "https://www.examtopics.com/discussions/oracle/view/79888-exam-1z0-071-topic-1-question-1-discussion/";
+
+        // Define destination folder and filename
+        String folderPath = "./src/main/java/org/example/tmp"; // Relative or absolute path (e.g., "C:/my_folder")
+        String fileName = "document1.html";
+
+        try {
+            // 1. Ensure the destination directory exists
+            Path dir = Paths.get(folderPath);
+            if (!Files.exists(dir)) {
+                Files.createDirectories(dir);
+            }
+
+            // 2. Resolve full file path
+            Path filePath = dir.resolve(fileName);
+
+            // 3. Open streams using try-with-resources (auto-closes reader & writer)
+            URL url = new URL(urlString);
+            try (Reader reader = new InputStreamReader(new BufferedInputStream(url.openStream()));
+                 Writer writer = Files.newBufferedWriter(filePath)) {
+
+                char[] buffer = new char[8192]; // Use a buffer array for drastically better performance
+                int length;
+                while ((length = reader.read(buffer)) != -1) {
+                    writer.write(buffer, 0, length);
+                }
+            }
+
+            System.out.println("File saved successfully to: " + filePath.toAbsolutePath());
+
+        } catch (IOException ex) {
+            System.err.println("Error downloading content: " + ex.getMessage());
+        }
     }
 }
 
