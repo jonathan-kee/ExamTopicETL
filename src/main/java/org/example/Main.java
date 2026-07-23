@@ -510,7 +510,7 @@ public class Main {
 
     private static void singleDocument() throws SQLException, IOException {
         // 1. Pass a File object instead of a raw String
-        File input = new File("/Users/jonathankee/examTopicScraper/document/TestDocument.html");
+        File input = new File("/Users/jonathankee/examTopicScraper/document/Document1.html");
 
         // 2. Specify the File and character encoding (usually "UTF-8")
         Document doc = Jsoup.parse(input, "UTF-8");
