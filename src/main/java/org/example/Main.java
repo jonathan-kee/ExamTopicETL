@@ -4,6 +4,7 @@ import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
+import org.postgresql.util.PSQLException;
 
 import java.io.File;
 import java.io.IOException;
@@ -404,6 +405,8 @@ public class Main {
         try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
              ResultSet rs = conn.createStatement().executeQuery(insert)) {
 
+        } catch (PSQLException e){
+            // Do nothing with no result because inserting data
         }
     }
 
