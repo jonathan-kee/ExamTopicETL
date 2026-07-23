@@ -402,9 +402,8 @@ public class Main {
     private static void insertJdbc(String insert) throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/postgres";
         try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
-             PreparedStatement ps = conn.prepareStatement(
-                     insert);
-             ResultSet rs = ps.executeQuery()) {
+             ResultSet rs = conn.createStatement().executeQuery(insert)) {
+
         }
     }
 
@@ -415,10 +414,10 @@ public class Main {
         // 2. Specify the File and character encoding (usually "UTF-8")
         Document doc = Jsoup.parse(input, "UTF-8");
 
-        Question q = Question(1, "oracle", doc);
+        Question q = Question(1, "1z0-071", doc);
         // System.out.println(q);
         String insertQuestion = Question.insert(q);
-        // System.out.println(insertQuestion);
+        System.out.println(insertQuestion);
         insertJdbc(insertQuestion);
 
         List<Answer> a = Answers(1, "oracle", doc);
