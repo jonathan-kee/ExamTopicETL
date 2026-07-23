@@ -539,7 +539,8 @@ public class Main {
 
         for (int i = 0; i < files.size(); i++) {
             Document doc = Jsoup.parse(files.get(i), "UTF-8");
-            scrapeMultipleDocuments(doc, i, questions, answers, discussions);
+            // +1 to make sure follow normal numbering
+            scrapeMultipleDocuments(doc, i+1, questions, answers, discussions);
         }
 
         List<Answer> allAnswers = answers.stream()
@@ -563,9 +564,8 @@ public class Main {
         executeQueryJdbc(insertDiscussions);
     }
 
-    public static void main(String[] args) {
-
-
+    public static void main(String[] args) throws SQLException, IOException {
+        multipleDocuments();
     }
 }
 
