@@ -317,10 +317,9 @@ public class Main {
         return new Question(number, exam, sb.toString());
     }
 
-    private static List<Answer> Answers(int questionNumber, String questionExam, Document doc) {
+    private static List<Answer> Answers(int questionNumber, String questionExam, Document doc) throws NoSuchElementException {
         // List of Answer to return
         List<Answer> answers = new ArrayList<>();
-
         // Answer
         Elements q = doc.selectXpath("/html/body/div[2]/div/div[4]/div/div[1]/div[2]/div[2]/ul");
         int questionsChildNodesLength = q.getFirst().childNodes().size();
@@ -503,9 +502,17 @@ public class Main {
         Question q = Question(number, "1z0-071", doc);
         multipleQuestion.add(q);
 
-        // Actually this is flatmap operation
-        List<Answer> a = Answers(number, "1z0-071", doc);
-        multipleAnswer.add(a);
+        try {
+            // Actually this is flatmap operation
+            List<Answer> a = Answers(number, "1z0-071", doc); // Might throw error
+            multipleAnswer.add(a);
+        } catch (NoSuchElementException e) {
+            System.out.println("The answers are screenshots");
+            // 99 is to mark as dirty data
+            Answer answer = new Answer(99, number, "1z0-071", null, false);
+            List<Answer> dirtyAnswer = List.of(answer);
+            multipleAnswer.add(dirtyAnswer);
+        }
 
         // Actually this is flatmap operation
         List<Discussion> d = Discussions(number, "1z0-071", doc);
@@ -536,6 +543,17 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+        // sort files, so insertion question number is correct
+        files.sort((firstFile,secondFile)->{
+            // Strip everything except numbers (removes "Document" and ".html")
+            int firstFileNum = Integer.parseInt(firstFile.getName().replaceAll("\\D+", ""));
+            int secondFileNum = Integer.parseInt(secondFile.getName().replaceAll("\\D+", ""));
+
+            // Compare primitive ints directly
+            return Integer.compare(firstFileNum, secondFileNum);
+        });
+        List<File> debugFile = files;
 
         List<Question> questions = new ArrayList<>();
         List<List<Answer>> answers = new ArrayList<>();
