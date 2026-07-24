@@ -1,3 +1,8 @@
+# Highligts of project
+[Multithread code perfomance increase up to 9x](./screenshots/multithreadPerformance.png)
+
+![Multithread code perfomance increase up to 9x](./screenshots/multithreadPerformance.png)
+
 # Install SDKman
 Link:
 https://sdkman.io/install/
