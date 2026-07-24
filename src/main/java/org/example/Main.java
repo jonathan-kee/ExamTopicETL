@@ -604,20 +604,22 @@ public class Main {
             public String getUrl() {
                 return url;
             }
+
         }
 
-        new Tuple("document1.html", "https://www.examtopics.com/discussions/oracle/view/79888-exam-1z0-071-topic-1-question-1-discussion/");
-        new Tuple("document2.html", "https://www.examtopics.com/discussions/oracle/view/79530-exam-1z0-071-topic-1-question-2-discussion/");
-        downloadDocument();
+        var t = new Tuple("document1.html", "https://www.examtopics.com/discussions/oracle/view/79888-exam-1z0-071-topic-1-question-1-discussion/");
+        var t2 = new Tuple("document2.html", "https://www.examtopics.com/discussions/oracle/view/79530-exam-1z0-071-topic-1-question-2-discussion/");
+        List<Tuple> list = new ArrayList<>();
+        list.add(t);
+        list.add(t2);
+        for (int i = 0; i < list.size(); i++) {
+            downloadDocument(list.get(i).getFileName(), list.get(i).getUrl());
+        }
     }
 
-    private static void downloadDocument(){
-        String urlString = "https://www.examtopics.com/discussions/oracle/view/79888-exam-1z0-071-topic-1-question-1-discussion/";
-
+    private static void downloadDocument(String fileName, String urlString){
         // Define destination folder and filename
         String folderPath = "./src/main/java/org/example/tmp"; // Relative or absolute path (e.g., "C:/my_folder")
-        String fileName = "document1.html";
-
         try {
             // 1. Ensure the destination directory exists
             Path dir = Paths.get(folderPath);
