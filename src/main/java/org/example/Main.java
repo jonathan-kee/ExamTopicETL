@@ -16,6 +16,7 @@ import java.sql.*;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
@@ -302,6 +303,7 @@ public class Main {
     static class Tuple {
         String fileName;
         String url;
+
         public Tuple(String fileName, String url) {
             this.fileName = fileName;
             this.url = url;
@@ -517,14 +519,14 @@ public class Main {
     private static List<Tuple> executeQueryJdbcResult(String sql, int... columnToGet) throws SQLException {
         String url = "jdbc:postgresql://localhost:5432/postgres";
         List<Tuple> list = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123")){
-            try(PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123")) {
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
                 try (ResultSet rs = ps.executeQuery()) {
                     while (rs.next()) {
                         Tuple tuple = new Tuple();
-                        for(int i = 0; i < columnToGet.length; i++) {
+                        for (int i = 0; i < columnToGet.length; i++) {
                             if (columnToGet[i] == 1) {
-                                tuple.setFileName("document"+rs.getString(columnToGet[i])+".html");
+                                tuple.setFileName("document" + rs.getString(columnToGet[i]) + ".html");
                             }
                             if (columnToGet[i] == 2) {
                                 tuple.setUrl(rs.getString(columnToGet[i]));
@@ -586,6 +588,35 @@ public class Main {
         multipleDiscussion.add(d);
     }
 
+    // todo: For multithreaded purpose
+    // The reason I put multipleQuestion inside is avoid race condition (multiple thread access same variable / reference)
+    private static List<Question> scrapeMultipleDocumentsQuestion(Document doc, int number) {
+        List<Question> multipleQuestion = new ArrayList<>();
+        Question q = Question(number, "1z0-071", doc);
+        multipleQuestion.add(q);
+        return multipleQuestion;
+    }
+
+    // todo: For multithreaded purpose
+    // The reason I put multipleAnswer inside is avoid race condition (multiple thread access same variable / reference)
+    private static List<Answer> scapeMultipleDocumentsAnswer(Document doc, int number) {
+        List<Answer> multipleAnswer = null;
+        try {
+            // Actually this is flatmap operation
+            multipleAnswer = Answers(number, "1z0-071", doc); // Might throw error
+        } catch (NoSuchElementException e) {
+            System.out.println("The answers are screenshots");
+            // 99 is to mark as dirty data
+            Answer answer = new Answer(99, number, "1z0-071", null, false);
+            multipleAnswer = List.of(answer);
+        }
+        return multipleAnswer;
+    }
+
+    private static List<Discussion> scrapeMultipleDocumentsDiscussion(Document doc, int number) {
+        return Discussions(number, "1z0-071", doc);
+    }
+
     private static void singleDocument() throws SQLException, IOException {
         // 1. Pass a File object instead of a raw String
         File input = new File("/Users/jonathankee/examTopicScraper/static_page/src/main/resources/Document1.html");
@@ -602,17 +633,17 @@ public class Main {
 
         try (Stream<Path> paths = Files.list(folderPath)) {
             paths.forEach(path -> {
-                System.out.println(path.toAbsolutePath());
-                File file = new File(path.toAbsolutePath().toString());
-                files.add(file);
-            }
+                        System.out.println(path.toAbsolutePath());
+                        File file = new File(path.toAbsolutePath().toString());
+                        files.add(file);
+                    }
             );
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         // sort files, so insertion question number is correct
-        files.sort((firstFile,secondFile)->{
+        files.sort((firstFile, secondFile) -> {
             // Strip everything except numbers (removes "Document" and ".html")
             int firstFileNum = Integer.parseInt(firstFile.getName().replaceAll("\\D+", ""));
             int secondFileNum = Integer.parseInt(secondFile.getName().replaceAll("\\D+", ""));
@@ -653,10 +684,98 @@ public class Main {
         executeQueryJdbc(insertDiscussions);
     }
 
-    public static void main(String[] args) throws SQLException, InterruptedException {
+    private static void multipleDocumentsMultiThread() throws IOException, SQLException {
+        Path folderPath = Paths.get("/Users/jonathankee/examTopicScraper/static_page/src/main/resources");
+        List<File> files = new ArrayList<>();
+
+        try (Stream<Path> paths = Files.list(folderPath)) {
+            paths.forEach(path -> {
+                        System.out.println(path.toAbsolutePath());
+                        File file = new File(path.toAbsolutePath().toString());
+                        files.add(file);
+                    }
+            );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // sort files, so insertion question number is correct
+        files.sort((firstFile, secondFile) -> {
+            // Strip everything except numbers (removes "Document" and ".html")
+            int firstFileNum = Integer.parseInt(firstFile.getName().replaceAll("\\D+", ""));
+            int secondFileNum = Integer.parseInt(secondFile.getName().replaceAll("\\D+", ""));
+
+            // Compare primitive ints directly
+            return Integer.compare(firstFileNum, secondFileNum);
+        });
+        List<File> debugFile = files;
+
+        List<Question> questions = new ArrayList<>();
+        List<List<Answer>> answers = new ArrayList<>();
+        List<List<Discussion>> discussions = new ArrayList<>();
+
+        int cpuCount = Runtime.getRuntime().availableProcessors();
+        try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
+            for (int i = 0; i < files.getFirst().listFiles().length; i++) {
+                // submits tasks that we need result from before thread can continue
+                // get() will wait for the computation to finish
+                int finalI = i;
+                var folder = files.get(0);
+                var folderFiles = folder.listFiles();
+                var doc = executor.submit(() -> Jsoup.parse(folderFiles[finalI], "UTF-8"));
+                // The below three task are depended on doc finishing
+                // +1 to make sure follow normal numbering
+                var questionsE = executor.submit(() -> scrapeMultipleDocumentsQuestion(doc.get(), finalI + 1));
+                var answersE = executor.submit(() -> scapeMultipleDocumentsAnswer(doc.get(), finalI + 1));
+                var discussionsE = executor.submit(() -> scrapeMultipleDocumentsDiscussion(doc.get(), finalI + 1));
+
+                for (Question question : questionsE.get()) {
+                    questions.add(question);
+                }
+                answers.add(answersE.get());
+                discussions.add(discussionsE.get());
+            }
+        } catch (ExecutionException e) {
+            throw new RuntimeException(e);
+        } catch (InterruptedException e) {
+            throw new RuntimeException(e);
+        }
+
+        List<Answer> allAnswers = answers.stream()
+                .flatMap(List::stream) // Flattens Stream<List<Question>> into Stream<Question>
+                .collect(Collectors.toList());
+
+        List<Discussion> allDicussion = discussions.stream()
+                .flatMap(List::stream) // Flattens Stream<List<Question>> into Stream<Question>
+                .collect(Collectors.toList());
+
+        executeQueryJdbc("truncate browserless_answers;");
+        executeQueryJdbc("truncate browserless_discussions;");
+
+        try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
+            var insertQuestions = executor.submit(()-> Question.insertMultiple(questions) );
+            var insertAnswers = executor.submit(()-> Answer.insertMultiple(allAnswers) );
+            var insertDiscussions = executor.submit(()-> Discussion.insertMultiple(allDicussion) );
+                try {
+                    executeQueryJdbc(insertQuestions.get());
+                    executeQueryJdbc(insertAnswers.get());
+                    executeQueryJdbc(insertDiscussions.get());
+                } catch (SQLException e) {
+                    throw new RuntimeException(e);
+                } catch (InterruptedException e) {
+                    throw new RuntimeException(e);
+                } catch (ExecutionException e) {
+                    throw new RuntimeException(e);
+                }
+        }
+    }
+
+    public static void main(String[] args) throws SQLException, InterruptedException, IOException {
         Instant startInstant = Instant.now();
         // downloadSeveralDocumentsDatabase(); // 435 seconds (Single Threaded)
-        downloadSeveralDocumentsDatabaseMultiThread(); // 44 seconds (Multi Threaded)
+        // downloadSeveralDocumentsDatabaseMultiThread(); // 44 seconds (Multi Threaded)
+
+        multipleDocumentsMultiThread(); // 2 seconds (Multi Threaded)
         Instant endInstant = Instant.now();
         Duration duration = Duration.between(startInstant, endInstant);
         System.out.println("Execution time: " + duration.toMillis() + " ms");
@@ -664,7 +783,7 @@ public class Main {
     }
 
     private static void downloadSeveralDocumentsDatabase() throws SQLException, InterruptedException {
-        List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;",1, 2);
+        List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;", 1, 2);
         for (int i = 0; i < list.size(); i++) {
             downloadDocument(list.get(i).getFileName(), list.get(i).getUrl());
             Thread.sleep(650);
@@ -672,13 +791,14 @@ public class Main {
     }
 
     private static void downloadSeveralDocumentsDatabaseMultiThread() throws SQLException, InterruptedException {
-        List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;",1, 2);
+        List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;", 1, 2);
 
         int cpuCount = Runtime.getRuntime().availableProcessors();
-        try(ExecutorService executor = Executors.newFixedThreadPool(cpuCount)){
+        try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
             for (int i = 0; i < list.size(); i++) {
                 int finalI = i;
-                executor.submit(()-> {
+                // Submits work that doesn’t need to block the main flow (No need to return any result)
+                executor.submit(() -> {
                     downloadDocument(list.get(finalI).getFileName(), list.get(finalI).getUrl());
                     try {
                         Thread.sleep(650);
@@ -690,7 +810,7 @@ public class Main {
         }
     }
 
-    private static void downloadSeveralDocumentsHardcode(){
+    private static void downloadSeveralDocumentsHardcode() {
         // multipleDocuments();
         var t = new Tuple("document1.html", "https://www.examtopics.com/discussions/oracle/view/79888-exam-1z0-071-topic-1-question-1-discussion/");
         var t2 = new Tuple("document2.html", "https://www.examtopics.com/discussions/oracle/view/79530-exam-1z0-071-topic-1-question-2-discussion/");
@@ -702,7 +822,7 @@ public class Main {
         }
     }
 
-    private static void downloadDocument(String fileName, String urlString){
+    private static void downloadDocument(String fileName, String urlString) {
         // Define destination folder and filename
         String folderPath = "./src/main/resources/tmp"; // Relative or absolute path (e.g., "C:/my_folder")
         try {
