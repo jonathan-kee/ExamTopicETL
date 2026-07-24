@@ -657,8 +657,10 @@ public class Main {
         List<List<Answer>> answers = new ArrayList<>();
         List<List<Discussion>> discussions = new ArrayList<>();
 
-        for (int i = 0; i < files.size(); i++) {
-            Document doc = Jsoup.parse(files.get(i), "UTF-8");
+        for (int i = 0; i < files.getFirst().listFiles().length; i++) {
+            var folder = files.get(0);
+            var folderFiles = folder.listFiles();
+            Document doc = Jsoup.parse(folderFiles[i], "UTF-8");
             // +1 to make sure follow normal numbering
             scrapeMultipleDocuments(doc, i + 1, questions, answers, discussions);
         }
@@ -774,8 +776,8 @@ public class Main {
         Instant startInstant = Instant.now();
         // downloadSeveralDocumentsDatabase(); // 435 seconds (Single Threaded)
         // downloadSeveralDocumentsDatabaseMultiThread(); // 44 seconds (Multi Threaded)
-
-        multipleDocumentsMultiThread(); // 2 seconds (Multi Threaded)
+        // multipleDocuments(); // 6 seconds (Single Threaded)
+        // multipleDocumentsMultiThread(); // 2 seconds (Multi Threaded)
         Instant endInstant = Instant.now();
         Duration duration = Duration.between(startInstant, endInstant);
         System.out.println("Execution time: " + duration.toMillis() + " ms");
