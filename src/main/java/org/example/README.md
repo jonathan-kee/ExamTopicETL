@@ -82,3 +82,7 @@ add gradle.properties file to make .gradlew command output more information
 [different dependencies](../../../../../screenshots/differentDependencies.png)
 
 ![different dependencies](../../../../../screenshots/differentDependencies.png)
+
+# Project Suggestion
+- Use Componse multiplatform 
+- add a simple note taking feature
