@@ -295,6 +295,44 @@ public class Main {
         }
     }
 
+    static class Tuple {
+        String fileName;
+        String url;
+        public Tuple(String fileName, String url) {
+            this.fileName = fileName;
+            this.url = url;
+        }
+
+        public Tuple() {
+            this.fileName = "";
+            this.url = "";
+        }
+
+        public String getFileName() {
+            return fileName;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+
+        public void setFileName(String fileName) {
+            this.fileName = fileName;
+        }
+
+        public void setUrl(String url) {
+            this.url = url;
+        }
+
+        @Override
+        public String toString() {
+            return "Tuple{" +
+                    "fileName='" + fileName + '\'' +
+                    ", url='" + url + '\'' +
+                    '}';
+        }
+    }
+
     private static Question Question(int number, String exam, Document doc) {
         // Question
         Elements questions = doc.selectXpath("/html/body/div[2]/div/div[4]/div/div[1]/div[2]/p");
@@ -472,6 +510,30 @@ public class Main {
         }
     }
 
+    private static List<Tuple> executeQueryJdbcResult(String sql, int... columnToGet) throws SQLException {
+        String url = "jdbc:postgresql://localhost:5432/postgres";
+        List<Tuple> list = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123")){
+            try(PreparedStatement ps = conn.prepareStatement(sql)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Tuple tuple = new Tuple();
+                        for(int i = 0; i < columnToGet.length; i++) {
+                            if (columnToGet[i] == 1) {
+                                tuple.setFileName("document"+rs.getString(columnToGet[i])+".html");
+                            }
+                            if (columnToGet[i] == 2) {
+                                tuple.setUrl(rs.getString(columnToGet[i]));
+                            }
+                        }
+                        list.add(tuple);
+                    }
+                }
+            }
+        }
+        return list;
+    }
+
     private static void scrapeSingleDocument(Document doc) throws SQLException {
         // Clear existing data
         executeQueryJdbc("truncate browserless_answers;");
@@ -588,25 +650,12 @@ public class Main {
     }
 
     public static void main(String[] args) throws SQLException, IOException {
+      List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;",1, 2);
+      list.forEach(System.out::println);
+    }
+
+    private static void downloadSeveralDocuments(){
         // multipleDocuments();
-        class Tuple {
-            String fileName;
-            String url;
-            public Tuple(String fileName, String url) {
-                this.fileName = fileName;
-                this.url = url;
-            }
-
-            public String getFileName() {
-                return fileName;
-            }
-
-            public String getUrl() {
-                return url;
-            }
-
-        }
-
         var t = new Tuple("document1.html", "https://www.examtopics.com/discussions/oracle/view/79888-exam-1z0-071-topic-1-question-1-discussion/");
         var t2 = new Tuple("document2.html", "https://www.examtopics.com/discussions/oracle/view/79530-exam-1z0-071-topic-1-question-2-discussion/");
         List<Tuple> list = new ArrayList<>();
