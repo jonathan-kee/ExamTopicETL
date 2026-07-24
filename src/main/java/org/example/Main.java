@@ -13,7 +13,11 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.sql.*;
+import java.time.Duration;
+import java.time.Instant;
 import java.util.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -650,7 +654,13 @@ public class Main {
     }
 
     public static void main(String[] args) throws SQLException, InterruptedException {
-        downloadSeveralDocumentsDatabase();
+        Instant startInstant = Instant.now();
+        // downloadSeveralDocumentsDatabase(); // 435 seconds (Single Threaded)
+        downloadSeveralDocumentsDatabaseMultiThread(); // 44 seconds (Multi Threaded)
+        Instant endInstant = Instant.now();
+        Duration duration = Duration.between(startInstant, endInstant);
+        System.out.println("Execution time: " + duration.toMillis() + " ms");
+        System.out.println("Formatted: " + duration.toSeconds() + " seconds");
     }
 
     private static void downloadSeveralDocumentsDatabase() throws SQLException, InterruptedException {
@@ -658,6 +668,25 @@ public class Main {
         for (int i = 0; i < list.size(); i++) {
             downloadDocument(list.get(i).getFileName(), list.get(i).getUrl());
             Thread.sleep(650);
+        }
+    }
+
+    private static void downloadSeveralDocumentsDatabaseMultiThread() throws SQLException, InterruptedException {
+        List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;",1, 2);
+
+        int cpuCount = Runtime.getRuntime().availableProcessors();
+        try(ExecutorService executor = Executors.newFixedThreadPool(cpuCount)){
+            for (int i = 0; i < list.size(); i++) {
+                int finalI = i;
+                executor.submit(()-> {
+                    downloadDocument(list.get(finalI).getFileName(), list.get(finalI).getUrl());
+                    try {
+                        Thread.sleep(650);
+                    } catch (InterruptedException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
+            }
         }
     }
 
