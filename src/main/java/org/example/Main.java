@@ -649,12 +649,19 @@ public class Main {
         executeQueryJdbc(insertDiscussions);
     }
 
-    public static void main(String[] args) throws SQLException, IOException {
-      List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;",1, 2);
-      list.forEach(System.out::println);
+    public static void main(String[] args) throws SQLException, InterruptedException {
+        downloadSeveralDocumentsDatabase();
     }
 
-    private static void downloadSeveralDocuments(){
+    private static void downloadSeveralDocumentsDatabase() throws SQLException, InterruptedException {
+        List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;",1, 2);
+        for (int i = 0; i < list.size(); i++) {
+            downloadDocument(list.get(i).getFileName(), list.get(i).getUrl());
+            Thread.sleep(650);
+        }
+    }
+
+    private static void downloadSeveralDocumentsHardcode(){
         // multipleDocuments();
         var t = new Tuple("document1.html", "https://www.examtopics.com/discussions/oracle/view/79888-exam-1z0-071-topic-1-question-1-discussion/");
         var t2 = new Tuple("document2.html", "https://www.examtopics.com/discussions/oracle/view/79530-exam-1z0-071-topic-1-question-2-discussion/");
@@ -668,7 +675,7 @@ public class Main {
 
     private static void downloadDocument(String fileName, String urlString){
         // Define destination folder and filename
-        String folderPath = "./src/main/java/org/example/tmp"; // Relative or absolute path (e.g., "C:/my_folder")
+        String folderPath = "./src/main/resources/tmp"; // Relative or absolute path (e.g., "C:/my_folder")
         try {
             // 1. Ensure the destination directory exists
             Path dir = Paths.get(folderPath);
