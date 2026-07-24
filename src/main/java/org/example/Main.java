@@ -774,10 +774,10 @@ public class Main {
 
     public static void main(String[] args) throws SQLException, InterruptedException, IOException {
         Instant startInstant = Instant.now();
-        // downloadSeveralDocumentsDatabase(); // 435 seconds (Single Threaded)
-        // downloadSeveralDocumentsDatabaseMultiThread(); // 44 seconds (Multi Threaded)
-        // multipleDocuments(); // 6 seconds (Single Threaded)
-        // multipleDocumentsMultiThread(); // 2 seconds (Multi Threaded)
+        // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
+        // downloadSeveralDocumentsDatabaseMultiThread();   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
+        // multipleDocuments();                             // 6 seconds    (Single Threaded)
+        // multipleDocumentsMultiThread();                  // 2 seconds    (Multi Threaded)    (6/2) = 3x speed up
         Instant endInstant = Instant.now();
         Duration duration = Duration.between(startInstant, endInstant);
         System.out.println("Execution time: " + duration.toMillis() + " ms");
