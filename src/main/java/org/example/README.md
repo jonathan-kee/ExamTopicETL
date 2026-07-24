@@ -13,6 +13,9 @@ For Gradle compatibility:
 Link:
 https://github.com/PrashDev425/network-programming
 
+# Java multithread resource
+Modern Concurrency in Java: Virtual Threads, Structured Concurrency, and Beyond By A N M Bazlur Rahman
+
 # Clean Build folder, Compile Fat Jar and Run it
 - ./gradlew clean
 - ./gradlew shadowJar
