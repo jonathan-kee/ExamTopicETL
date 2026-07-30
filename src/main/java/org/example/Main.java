@@ -7,7 +7,6 @@ import org.jsoup.select.Elements;
 import org.postgresql.util.PSQLException;
 
 import java.io.*;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -63,7 +62,7 @@ public class Main {
             String safeText2 = question.getText() != null ? question.getText().replace("'", "''") : "";
 
             String insert = """
-                    INSERT INTO browserless_questions
+                    INSERT INTO questions
                     (number, exam, text)
                     VALUES
                     (%d,'%s','%s');
@@ -73,7 +72,7 @@ public class Main {
 
         public static String insertMultiple(List<Question> questions) {
             String insertBoilerPlate = """
-                    INSERT INTO browserless_questions
+                    INSERT INTO questions
                     (number, exam, text)
                     VALUES
                     """;
@@ -149,7 +148,7 @@ public class Main {
 
         public static String insertMultiple(List<Answer> answers) {
             String insertBoilerPlate = """
-                    INSERT INTO browserless_answers
+                    INSERT INTO answers
                     (number, question_number, question_exam, text, is_correct)
                     VALUES
                     """;
@@ -268,7 +267,7 @@ public class Main {
 
         public static String insertMultiple(List<Discussion> dicussions) {
             String insertBoilerPlate = """
-                    INSERT INTO browserless_discussions
+                    INSERT INTO discussions
                     (number, question_number, question_exam, selected_answer, text, upvote)
                     VALUES
                     """;
@@ -542,8 +541,8 @@ public class Main {
 
     private static void scrapeSingleDocument(Document doc) throws SQLException {
         // Clear existing data
-        executeQueryJdbc("truncate browserless_answers;");
-        executeQueryJdbc("truncate browserless_discussions;");
+        executeQueryJdbc("truncate answers;");
+        executeQueryJdbc("truncate discussions;");
 
         Question q = Question(1, "1z0-071", doc);
         String insertQuestion = Question.insertSingle(q);
@@ -565,8 +564,8 @@ public class Main {
                                                 List<List<Answer>> multipleAnswer,
                                                 List<List<Discussion>> multipleDiscussion) throws SQLException {
         // Clear existing data
-        executeQueryJdbc("truncate browserless_answers;");
-        executeQueryJdbc("truncate browserless_discussions;");
+        executeQueryJdbc("truncate answers;");
+        executeQueryJdbc("truncate discussions;");
 
         Question q = Question(number, "1z0-071", doc);
         multipleQuestion.add(q);
@@ -675,8 +674,8 @@ public class Main {
                 .flatMap(List::stream) // Flattens Stream<List<Question>> into Stream<Question>
                 .collect(Collectors.toList());
 
-        executeQueryJdbc("truncate browserless_answers;");
-        executeQueryJdbc("truncate browserless_discussions;");
+        executeQueryJdbc("truncate answers;");
+        executeQueryJdbc("truncate discussions;");
 
         String insertQuestions = Question.insertMultiple(questions);
         executeQueryJdbc(insertQuestions);
@@ -750,8 +749,8 @@ public class Main {
                 .flatMap(List::stream) // Flattens Stream<List<Question>> into Stream<Question>
                 .collect(Collectors.toList());
 
-        executeQueryJdbc("truncate browserless_answers;");
-        executeQueryJdbc("truncate browserless_discussions;");
+        executeQueryJdbc("truncate answers;");
+        executeQueryJdbc("truncate discussions;");
 
         try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
             var insertQuestions = executor.submit(()-> Question.insertMultiple(questions) );
@@ -774,9 +773,9 @@ public class Main {
     public static void main(String[] args) throws SQLException, InterruptedException, IOException {
         Instant startInstant = Instant.now();
         // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
-        // downloadSeveralDocumentsDatabaseMultiThread();   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
-        multipleDocuments();                             // 6 seconds    (Single Threaded)
-        // multipleDocumentsMultiThread();                  // 2 seconds    (Multi Threaded)    (6/2) = 3x speed up
+        downloadSeveralDocumentsDatabaseMultiThread();   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
+        // multipleDocuments();                             // 6 seconds    (Single Threaded)
+        multipleDocumentsMultiThread();                  // 2 seconds    (Multi Threaded)    (6/2) = 3x speed up
 
         //singleDocument("document8.html");
         Instant endInstant = Instant.now();
