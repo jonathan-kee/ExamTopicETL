@@ -576,7 +576,7 @@ public class Main {
             List<Answer> a = Answers(number, "1z0-071", doc); // Might throw error
             multipleAnswer.add(a);
         } catch (NoSuchElementException e) {
-            System.out.println("The answers are screenshots");
+            System.out.println("The answers are screenshots, let Javascript handle it");
             // 99 is to mark as dirty data
             Answer answer = new Answer(99, number, "1z0-071", null, false);
             List<Answer> dirtyAnswer = List.of(answer);
@@ -617,9 +617,9 @@ public class Main {
         return Discussions(number, "1z0-071", doc);
     }
 
-    private static void singleDocument() throws SQLException, IOException {
+    private static void singleDocument(String documentName) throws SQLException, IOException {
         // 1. Pass a File object instead of a raw String
-        File input = new File("/Users/jonathankee/examTopicScraper/static_page/src/main/resources/Document1.html");
+        File input = new File("/Users/jonathankee/examTopicScraper/static_page/src/main/resources/tmp/"+documentName);
 
         // 2. Specify the File and character encoding (usually "UTF-8")
         Document doc = Jsoup.parse(input, "UTF-8");
@@ -627,40 +627,42 @@ public class Main {
         scrapeSingleDocument(doc);
     }
 
+    // Helper method to safely extract numbers from filenames
+    private static int extractNumber(File file) {
+        String digits = file.getName().replaceAll("\\D+", "");
+        return digits.isEmpty() ? 0 : Integer.parseInt(digits);
+    }
+
     private static void multipleDocuments() throws IOException, SQLException {
         Path folderPath = Paths.get("/Users/jonathankee/examTopicScraper/static_page/src/main/resources");
-        List<File> files = new ArrayList<>();
+
+        List<File> files = Collections.emptyList();
 
         try (Stream<Path> paths = Files.list(folderPath)) {
-            paths.forEach(path -> {
-                        System.out.println(path.toAbsolutePath());
-                        File file = new File(path.toAbsolutePath().toString());
-                        files.add(file);
-                    }
-            );
+            Optional<Path> firstPath = paths
+                    .peek(path -> System.out.println(path.toAbsolutePath()))
+                    .findFirst();
+
+            if (firstPath.isPresent() && Files.isDirectory(firstPath.get())) {
+                try (Stream<Path> subPaths = Files.list(firstPath.get())) {
+                    files = subPaths
+                            .map(Path::toFile)
+                            .sorted(Comparator.comparingInt(Main::extractNumber))
+                            .toList(); // Safely collected after sorting
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // sort files, so insertion question number is correct
-        files.sort((firstFile, secondFile) -> {
-            // Strip everything except numbers (removes "Document" and ".html")
-            int firstFileNum = Integer.parseInt(firstFile.getName().replaceAll("\\D+", ""));
-            int secondFileNum = Integer.parseInt(secondFile.getName().replaceAll("\\D+", ""));
-
-            // Compare primitive ints directly
-            return Integer.compare(firstFileNum, secondFileNum);
-        });
         List<File> debugFile = files;
 
         List<Question> questions = new ArrayList<>();
         List<List<Answer>> answers = new ArrayList<>();
         List<List<Discussion>> discussions = new ArrayList<>();
 
-        for (int i = 0; i < files.getFirst().listFiles().length; i++) {
-            var folder = files.get(0);
-            var folderFiles = folder.listFiles();
-            Document doc = Jsoup.parse(folderFiles[i], "UTF-8");
+        for (int i = 0; i < files.size(); i++) {
+            Document doc = Jsoup.parse(files.get(i), "UTF-8");
             // +1 to make sure follow normal numbering
             scrapeMultipleDocuments(doc, i + 1, questions, answers, discussions);
         }
@@ -776,8 +778,10 @@ public class Main {
         Instant startInstant = Instant.now();
         // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
         // downloadSeveralDocumentsDatabaseMultiThread();   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
-        // multipleDocuments();                             // 6 seconds    (Single Threaded)
+        multipleDocuments();                             // 6 seconds    (Single Threaded)
         // multipleDocumentsMultiThread();                  // 2 seconds    (Multi Threaded)    (6/2) = 3x speed up
+
+        //singleDocument("document8.html");
         Instant endInstant = Instant.now();
         Duration duration = Duration.between(startInstant, endInstant);
         System.out.println("Execution time: " + duration.toMillis() + " ms");
