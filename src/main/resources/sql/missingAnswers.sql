@@ -1,7 +1,7 @@
 CREATE OR REPLACE VIEW missing_answers_link AS
 with missing_answers as (
 	select distinct question_number
-	from browserless_answers
+	from answers
 	where length(text) = 2 or number = 99
 ),
 missing_answers_link as (
