@@ -690,28 +690,26 @@ public class Main {
 
     private static void multipleDocumentsMultiThread() throws IOException, SQLException {
         Path folderPath = Paths.get("/Users/jonathankee/examTopicScraper/static_page/src/main/resources");
-        List<File> files = new ArrayList<>();
+
+        List<File> files = Collections.emptyList();
 
         try (Stream<Path> paths = Files.list(folderPath)) {
-            paths.forEach(path -> {
-                        System.out.println(path.toAbsolutePath());
-                        File file = new File(path.toAbsolutePath().toString());
-                        files.add(file);
-                    }
-            );
+            Optional<Path> firstPath = paths
+                    .peek(path -> System.out.println(path.toAbsolutePath()))
+                    .findFirst();
+
+            if (firstPath.isPresent() && Files.isDirectory(firstPath.get())) {
+                try (Stream<Path> subPaths = Files.list(firstPath.get())) {
+                    files = subPaths
+                            .map(Path::toFile)
+                            .sorted(Comparator.comparingInt(Main::extractNumber))
+                            .toList(); // Safely collected after sorting
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
 
-        // sort files, so insertion question number is correct
-        files.sort((firstFile, secondFile) -> {
-            // Strip everything except numbers (removes "Document" and ".html")
-            int firstFileNum = Integer.parseInt(firstFile.getName().replaceAll("\\D+", ""));
-            int secondFileNum = Integer.parseInt(secondFile.getName().replaceAll("\\D+", ""));
-
-            // Compare primitive ints directly
-            return Integer.compare(firstFileNum, secondFileNum);
-        });
         List<File> debugFile = files;
 
         List<Question> questions = new ArrayList<>();
@@ -720,13 +718,12 @@ public class Main {
 
         int cpuCount = Runtime.getRuntime().availableProcessors();
         try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
-            for (int i = 0; i < files.getFirst().listFiles().length; i++) {
+            for (int i = 0; i < files.size(); i++) {
                 // submits tasks that we need result from before thread can continue
                 // get() will wait for the computation to finish
                 int finalI = i;
-                var folder = files.get(0);
-                var folderFiles = folder.listFiles();
-                var doc = executor.submit(() -> Jsoup.parse(folderFiles[finalI], "UTF-8"));
+                List<File> finalFiles = files;
+                var doc = executor.submit(() -> Jsoup.parse(finalFiles.get(finalI), "UTF-8"));
                 // The below three task are depended on doc finishing
                 // +1 to make sure follow normal numbering
                 var questionsE = executor.submit(() -> scrapeMultipleDocumentsQuestion(doc.get(), finalI + 1));
