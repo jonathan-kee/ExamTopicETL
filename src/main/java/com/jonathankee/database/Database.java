@@ -57,4 +57,26 @@ public class Database {
         }
         return list;
     }
+
+    public static List<Tuple> executeQueryJdbcResultImage(String sql, int... columnToGet) throws SQLException {
+        String url = "jdbc:postgresql://localhost:5432/postgres";
+        List<Tuple> list = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123")) {
+            try (PreparedStatement ps = conn.prepareStatement(sql)) {
+                try (ResultSet rs = ps.executeQuery()) {
+                    while (rs.next()) {
+                        Tuple tuple = new Tuple();
+                        for (int i = 0; i < columnToGet.length; i++) {
+                            if (columnToGet[i] == 1) {
+                                tuple.setUrl(rs.getString(columnToGet[i]));
+                                tuple.setFileName(null);
+                            }
+                        }
+                        list.add(tuple);
+                    }
+                }
+            }
+        }
+        return list;
+    }
 }
