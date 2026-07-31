@@ -3,7 +3,7 @@
 - ./gradlew shadowjar
 
 2) Download the documents
-- java -jar /Users/jonathankee/examTopicScraper/static_page/Download/build/libs/Download-all.jar
+- java -jar /Users/jonathankee/examTopicScraper/static_page/Download/build/libs/Download-all.jar "1z0-071"
 
 3) Scrape the data from the documents
 - java -jar /Users/jonathankee/examTopicScraper/static_page/Document/build/libs/Document-all.jar
