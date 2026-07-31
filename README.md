@@ -11,6 +11,11 @@
 4) Download the images
 - java -jar /Users/jonathankee/examTopicScraper/static_page/Image/build/libs/Image-all.jar
 
+# Clear assets for testing
+cd /Users/jonathankee/examTopicScraper/static_page/src/main/resources
+rm -rf images/*
+rm -rf tmp/*
+
 # Highlights of project
 [Multithread code perfomance increase up to 9x](screenshots/multithreadPerformance.png)
 
