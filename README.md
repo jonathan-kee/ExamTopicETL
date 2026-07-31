@@ -1,7 +1,7 @@
 # Highligts of project
-[Multithread code perfomance increase up to 9x](../../../../../screenshots/multithreadPerformance.png)
+[Multithread code perfomance increase up to 9x](screenshots/multithreadPerformance.png)
 
-![Multithread code perfomance increase up to 9x](../../../../../screenshots/multithreadPerformance.png)
+![Multithread code perfomance increase up to 9x](screenshots/multithreadPerformance.png)
 
 # Install SDKman
 Link:
@@ -56,32 +56,32 @@ For the demo video:
 project name: calc
 source package name: com.gradlelab
 
-[Gradle Init result](../../../../../screenshots/gradleinit.png)
+[Gradle Init result](screenshots/gradleinit.png)
 
-![Gradle Init result](../../../../../screenshots/gradleinit.png)
+![Gradle Init result](screenshots/gradleinit.png)
 
-[Gradle w command](../../../../../screenshots/gradlewCommand.png)
+[Gradle w command](screenshots/gradlewCommand.png)
 
-![Gradle w command](../../../../../screenshots/gradlewCommand.png)
+![Gradle w command](screenshots/gradlewCommand.png)
 
-[Java related Plugins](../../../../../screenshots/JavaRelatedPlugins.png)
+[Java related Plugins](screenshots/JavaRelatedPlugins.png)
 
-![Java related Plugins](../../../../../screenshots/JavaRelatedPlugins.png)
+![Java related Plugins](screenshots/JavaRelatedPlugins.png)
 
 - ./gradlew tasks --all
 
 add gradle.properties file to make .gradlew command output more information
 
-[tasks concepts](../../../../../screenshots/tasksConcepts.png)
+[tasks concepts](screenshots/tasksConcepts.png)
 
-![tasks conceptss](../../../../../screenshots/tasksConcepts.png)
+![tasks conceptss](screenshots/tasksConcepts.png)
 
 - ./gradlew :compileJava
 - ./gradlew :cleanCompileJava
 
-[different dependencies](../../../../../screenshots/differentDependencies.png)
+[different dependencies](screenshots/differentDependencies.png)
 
-![different dependencies](../../../../../screenshots/differentDependencies.png)
+![different dependencies](screenshots/differentDependencies.png)
 
 # Project Suggestion
 - Use Componse multiplatform 
