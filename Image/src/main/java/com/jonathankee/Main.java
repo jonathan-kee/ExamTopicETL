@@ -37,13 +37,13 @@ public class Main {
 
             // 3. Open streams using try-with-resources (auto-closes reader & writer)
             URL url = new URL(urlString);
-            try (Reader reader = new InputStreamReader(new BufferedInputStream(url.openStream()));
-                 Writer writer = Files.newBufferedWriter(filePath)) {
+            try (InputStream in = new BufferedInputStream(url.openStream());
+                 OutputStream out = new BufferedOutputStream(Files.newOutputStream(filePath))) {
 
-                char[] buffer = new char[8192]; // Use a buffer array for drastically better performance
+                byte[] buffer = new byte[8192]; // Use byte[], NOT char[]
                 int length;
-                while ((length = reader.read(buffer)) != -1) {
-                    writer.write(buffer, 0, length);
+                while ((length = in.read(buffer)) != -1) {
+                    out.write(buffer, 0, length);
                 }
             }
 
