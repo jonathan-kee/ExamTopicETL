@@ -92,7 +92,7 @@ public class Main {
 
     public static void main(String[] args) throws SQLException, InterruptedException {
         Instant startInstant = Instant.now();
-        downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
+        // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
         downloadSeveralDocumentsDatabaseMultiThread();   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
 
         //singleDocument("document8.html");
