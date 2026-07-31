@@ -1,10 +1,10 @@
 package com.jonathankee;
 
+import com.jonathankee.schema.Tuple;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Node;
 import org.jsoup.select.Elements;
-import org.postgresql.util.PSQLException;
 
 import java.io.*;
 import java.net.URL;
@@ -24,48 +24,11 @@ import java.util.stream.Stream;
 import com.jonathankee.schema.Answer;
 import com.jonathankee.schema.Discussion;
 import com.jonathankee.schema.Question;
+import static com.jonathankee.database.Database.executeQueryJdbc;
+import static com.jonathankee.database.Database.executeQueryJdbcResult;
 
 // https://scrapfly.io/blog/posts/web-scraping-java-jsoup-html-parsing
 public class Main {
-
-    static class Tuple {
-        String fileName;
-        String url;
-
-        public Tuple(String fileName, String url) {
-            this.fileName = fileName;
-            this.url = url;
-        }
-
-        public Tuple() {
-            this.fileName = "";
-            this.url = "";
-        }
-
-        public String getFileName() {
-            return fileName;
-        }
-
-        public String getUrl() {
-            return url;
-        }
-
-        public void setFileName(String fileName) {
-            this.fileName = fileName;
-        }
-
-        public void setUrl(String url) {
-            this.url = url;
-        }
-
-        @Override
-        public String toString() {
-            return "Tuple{" +
-                    "fileName='" + fileName + '\'' +
-                    ", url='" + url + '\'' +
-                    '}';
-        }
-    }
 
     private static Question Question(int number, String exam, Document doc) {
         // Question
@@ -217,55 +180,6 @@ public class Main {
         }
 
         return discussions;
-    }
-
-    private static void testJdbc() throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
-        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
-             PreparedStatement ps = conn.prepareStatement(
-                     "SELECT * FROM questions");
-             ResultSet rs = ps.executeQuery()) {
-            while (rs.next()) {
-                System.out.println(rs.getString(1));
-                System.out.println(rs.getString(2));
-                System.out.println(rs.getString(3));
-            }
-        }
-    }
-
-    private static void executeQueryJdbc(String sql) throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
-        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
-             ResultSet rs = conn.createStatement().executeQuery(sql)) {
-
-        } catch (PSQLException e) {
-            e.printStackTrace();
-            // Do nothing with no result because inserting data
-        }
-    }
-
-    private static List<Tuple> executeQueryJdbcResult(String sql, int... columnToGet) throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
-        List<Tuple> list = new ArrayList<>();
-        try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123")) {
-            try (PreparedStatement ps = conn.prepareStatement(sql)) {
-                try (ResultSet rs = ps.executeQuery()) {
-                    while (rs.next()) {
-                        Tuple tuple = new Tuple();
-                        for (int i = 0; i < columnToGet.length; i++) {
-                            if (columnToGet[i] == 1) {
-                                tuple.setFileName("document" + rs.getString(columnToGet[i]) + ".html");
-                            }
-                            if (columnToGet[i] == 2) {
-                                tuple.setUrl(rs.getString(columnToGet[i]));
-                            }
-                        }
-                        list.add(tuple);
-                    }
-                }
-            }
-        }
-        return list;
     }
 
     private static void scrapeSingleDocument(Document doc) throws SQLException {
