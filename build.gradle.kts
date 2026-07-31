@@ -28,7 +28,7 @@ allprojects {
         archiveClassifier.set("all") // Optional: names the file static_page-1.0-SNAPSHOT-all.jar
         manifest {
             attributes(
-                "Main-Class" to "org.example.Main"
+                "Main-Class" to "com.jonathankee.Main"
             )
         }
     }
