@@ -62,17 +62,18 @@ public class Main {
         }
     }
 
-    private static void downloadSeveralDocumentsDatabase() throws SQLException, InterruptedException {
-        List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;", 1, 2);
+    private static void downloadSeveralDocumentsDatabase(String exam) throws SQLException, InterruptedException {
+        String sql = "SELECT number, link FROM questionslink WHERE exam = '" + exam + "';";
+        List<Tuple> list = executeQueryJdbcResult(sql, 1, 2);
         for (int i = 0; i < list.size(); i++) {
             downloadDocument(list.get(i).getFileName(), list.get(i).getUrl());
             Thread.sleep(650);
         }
     }
 
-    private static void downloadSeveralDocumentsDatabaseMultiThread() throws SQLException, InterruptedException {
-        List<Tuple> list = executeQueryJdbcResult("SELECT number, link FROM questionslink;", 1, 2);
-
+    private static void downloadSeveralDocumentsDatabaseMultiThread(String exam) throws SQLException, InterruptedException {
+        String sql = "SELECT number, link FROM questionslink WHERE exam = '" + exam + "';";
+        List<Tuple> list = executeQueryJdbcResult(sql, 1, 2);
         int cpuCount = Runtime.getRuntime().availableProcessors();
         try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
             for (int i = 0; i < list.size(); i++) {
@@ -91,14 +92,20 @@ public class Main {
     }
 
     public static void main(String[] args) throws SQLException, InterruptedException {
-        Instant startInstant = Instant.now();
-        // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
-        downloadSeveralDocumentsDatabaseMultiThread();   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
+        if (args.length > 0) {
+            System.out.println("Argument received: " + args[0]);
+            String exam = args[0];
+            Instant startInstant = Instant.now();
+            // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
+            downloadSeveralDocumentsDatabaseMultiThread(exam);   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
 
-        //singleDocument("document8.html");
-        Instant endInstant = Instant.now();
-        Duration duration = Duration.between(startInstant, endInstant);
-        System.out.println("Execution time: " + duration.toMillis() + " ms");
-        System.out.println("Formatted: " + duration.toSeconds() + " seconds");
+            //singleDocument("document8.html");
+            Instant endInstant = Instant.now();
+            Duration duration = Duration.between(startInstant, endInstant);
+            System.out.println("Execution time: " + duration.toMillis() + " ms");
+            System.out.println("Formatted: " + duration.toSeconds() + " seconds");
+        } else {
+            System.out.println("Usage: java -jar /Users/jonathankee/examTopicScraper/static_page/Download/build/libs/Download-all.jar \"1z0-071\"");
+        }
     }
 }
