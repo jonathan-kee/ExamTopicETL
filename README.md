@@ -1,8 +1,11 @@
 # Launch Jars
-1) Download the documents
+1) Gradle build fat jars for multi module project
+- ./gradlew shadowjar
+
+2) Download the documents
 - java -jar /Users/jonathankee/examTopicScraper/static_page/Download/build/libs/Download-all.jar
 
-2) Scrape the data from the documents
+3) Scrape the data from the documents
 - java -jar /Users/jonathankee/examTopicScraper/static_page/Document/build/libs/Document-all.jar
 
 # Highlights of project
