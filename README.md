@@ -8,6 +8,9 @@
 3) Scrape the data from the documents
 - java -jar /Users/jonathankee/examTopicScraper/static_page/Document/build/libs/Document-all.jar
 
+4) Download the images
+- java -jar /Users/jonathankee/examTopicScraper/static_page/Image/build/libs/Image-all.jar
+
 # Highlights of project
 [Multithread code perfomance increase up to 9x](screenshots/multithreadPerformance.png)
 
