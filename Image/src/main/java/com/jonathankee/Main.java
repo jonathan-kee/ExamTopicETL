@@ -1,4 +1,4 @@
-package org.example;
+package com.jonathankee;
 
 import com.jonathankee.schema.Tuple;
 
