@@ -1,4 +1,4 @@
-package org.example;
+package com.jonathankee;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -576,9 +576,13 @@ public class Main {
             multipleAnswer.add(a);
         } catch (NoSuchElementException e) {
             System.out.println("The answers are screenshots, let Javascript handle it");
-            // 99 is to mark as dirty data
-            Answer answer = new Answer(99, number, "1z0-071", null, false);
-            List<Answer> dirtyAnswer = List.of(answer);
+            // number is question number
+            Answer answer = new Answer(1, number, "1z0-071", null, false);
+            Answer answer2 = new Answer(2, number, "1z0-071", null, false);
+            Answer answer3 = new Answer(3, number, "1z0-071", null, false);
+            Answer answer4 = new Answer(4, number, "1z0-071", null, false);
+            Answer answer5 = new Answer(5, number, "1z0-071", null, false);
+            List<Answer> dirtyAnswer = List.of(answer, answer2, answer3, answer4, answer5);
             multipleAnswer.add(dirtyAnswer);
         }
 
@@ -605,9 +609,13 @@ public class Main {
             multipleAnswer = Answers(number, "1z0-071", doc); // Might throw error
         } catch (NoSuchElementException e) {
             System.out.println("The answers are screenshots");
-            // 99 is to mark as dirty data
-            Answer answer = new Answer(99, number, "1z0-071", null, false);
-            multipleAnswer = List.of(answer);
+            // number is question number
+            Answer answer = new Answer(1, number, "1z0-071", null, false);
+            Answer answer2 = new Answer(2, number, "1z0-071", null, false);
+            Answer answer3 = new Answer(3, number, "1z0-071", null, false);
+            Answer answer4 = new Answer(4, number, "1z0-071", null, false);
+            Answer answer5 = new Answer(5, number, "1z0-071", null, false);
+            multipleAnswer = List.of(answer, answer2, answer3, answer4, answer5);
         }
         return multipleAnswer;
     }
@@ -773,7 +781,7 @@ public class Main {
     public static void main(String[] args) throws SQLException, InterruptedException, IOException {
         Instant startInstant = Instant.now();
         // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
-        downloadSeveralDocumentsDatabaseMultiThread();   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
+        // downloadSeveralDocumentsDatabaseMultiThread();   // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
         // multipleDocuments();                             // 6 seconds    (Single Threaded)
         multipleDocumentsMultiThread();                  // 2 seconds    (Multi Threaded)    (6/2) = 3x speed up
 
