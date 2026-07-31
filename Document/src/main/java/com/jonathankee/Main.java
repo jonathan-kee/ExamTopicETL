@@ -206,7 +206,6 @@ public class Main {
         // Clear existing data
         executeQueryJdbc("truncate answers;");
         executeQueryJdbc("truncate discussions;");
-
         Question q = Question(number, "1z0-071", doc);
         multipleQuestion.add(q);
 
@@ -266,7 +265,7 @@ public class Main {
 
     private static void singleDocument(String documentName) throws SQLException, IOException {
         // 1. Pass a File object instead of a raw String
-        File input = new File("/Users/jonathankee/examTopicScraper/static_page/src/main/resources/tmp/"+documentName);
+        File input = new File("/Users/jonathankee/examTopicScraper/static_page/src/main/resources/tmp/" + documentName);
 
         // 2. Specify the File and character encoding (usually "UTF-8")
         Document doc = Jsoup.parse(input, "UTF-8");
@@ -281,25 +280,19 @@ public class Main {
     }
 
     private static void multipleDocuments() throws IOException, SQLException {
-        Path folderPath = Paths.get("/Users/jonathankee/examTopicScraper/static_page/src/main/resources");
-
         List<File> files = Collections.emptyList();
 
-        try (Stream<Path> paths = Files.list(folderPath)) {
-            Optional<Path> firstPath = paths
-                    .peek(path -> System.out.println(path.toAbsolutePath()))
-                    .findFirst();
+        Path folderPath = Paths.get("/Users/jonathankee/examTopicScraper/static_page/src/main/resources/tmp");
 
-            if (firstPath.isPresent() && Files.isDirectory(firstPath.get())) {
-                try (Stream<Path> subPaths = Files.list(firstPath.get())) {
-                    files = subPaths
-                            .map(Path::toFile)
-                            .sorted(Comparator.comparingInt(Main::extractNumber))
-                            .toList(); // Safely collected after sorting
-                }
+        boolean debugDirectory = Files.isDirectory(folderPath);
+
+        if (debugDirectory) {
+            try (Stream<Path> subPaths = Files.list(folderPath)) {
+                files = subPaths
+                        .map(Path::toFile)
+                        .sorted(Comparator.comparingInt(Main::extractNumber))
+                        .toList(); // Safely collected after sorting
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         List<File> debugFile = files;
@@ -336,25 +329,19 @@ public class Main {
     }
 
     private static void multipleDocumentsMultiThread() throws IOException, SQLException {
-        Path folderPath = Paths.get("/Users/jonathankee/examTopicScraper/static_page/src/main/resources");
-
         List<File> files = Collections.emptyList();
 
-        try (Stream<Path> paths = Files.list(folderPath)) {
-            Optional<Path> firstPath = paths
-                    .peek(path -> System.out.println(path.toAbsolutePath()))
-                    .findFirst();
+        Path folderPath = Paths.get("/Users/jonathankee/examTopicScraper/static_page/src/main/resources/tmp/");
 
-            if (firstPath.isPresent() && Files.isDirectory(firstPath.get())) {
-                try (Stream<Path> subPaths = Files.list(firstPath.get())) {
-                    files = subPaths
-                            .map(Path::toFile)
-                            .sorted(Comparator.comparingInt(Main::extractNumber))
-                            .toList(); // Safely collected after sorting
-                }
+        boolean debugDirectory = Files.isDirectory(folderPath);
+
+        if (debugDirectory) {
+            try (Stream<Path> subPaths = Files.list(folderPath)) {
+                files = subPaths
+                        .map(Path::toFile)
+                        .sorted(Comparator.comparingInt(Main::extractNumber))
+                        .toList(); // Safely collected after sorting
             }
-        } catch (IOException e) {
-            e.printStackTrace();
         }
 
         List<File> debugFile = files;
@@ -401,9 +388,9 @@ public class Main {
         executeQueryJdbc("truncate discussions;");
 
         try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
-            var insertQuestions = executor.submit(()-> Question.insertMultiple(questions) );
-            var insertAnswers = executor.submit(()-> Answer.insertMultiple(allAnswers) );
-            var insertDiscussions = executor.submit(()-> Discussion.insertMultiple(allDicussion) );
+            var insertQuestions = executor.submit(() -> Question.insertMultiple(questions));
+            var insertAnswers = executor.submit(() -> Answer.insertMultiple(allAnswers));
+            var insertDiscussions = executor.submit(() -> Discussion.insertMultiple(allDicussion));
             try {
                 executeQueryJdbc(insertQuestions.get());
                 executeQueryJdbc(insertAnswers.get());
