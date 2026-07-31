@@ -12,6 +12,10 @@ allprojects {
     apply(plugin = "com.github.johnrengelman.shadow")
     repositories {
         mavenCentral()
+        flatDir {
+            // Points to the root project's build/libs folder
+            dirs(rootProject.layout.buildDirectory.dir("libs"))
+        }
     }
     dependencies {
         testImplementation(platform("org.junit:junit-bom:5.10.0"))
