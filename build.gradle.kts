@@ -9,6 +9,7 @@ version = "1.0-SNAPSHOT"
 
 allprojects {
     apply(plugin = "java")
+    apply(plugin = "com.github.johnrengelman.shadow")
     repositories {
         mavenCentral()
     }
