@@ -1,4 +1,11 @@
-# Highligts of project
+# Launch Jars
+1) Download the documents
+- java -jar /Users/jonathankee/examTopicScraper/static_page/Download/build/libs/Download-all.jar
+
+2) Scrape the data from the documents
+- java -jar /Users/jonathankee/examTopicScraper/static_page/Document/build/libs/Document-all.jar
+
+# Highlights of project
 [Multithread code perfomance increase up to 9x](screenshots/multithreadPerformance.png)
 
 ![Multithread code perfomance increase up to 9x](screenshots/multithreadPerformance.png)
