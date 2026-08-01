@@ -90,7 +90,7 @@ public class Discussion {
 
     public static String insertMultiple(List<Discussion> dicussions) {
         String insertBoilerPlate = """
-                    INSERT INTO discussions
+                    INSERT INTO scrape.discussions
                     (number, question_number, question_exam, selected_answer, text, upvote)
                     VALUES
                     """;

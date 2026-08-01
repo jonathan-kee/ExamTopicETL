@@ -204,8 +204,8 @@ public class Main {
                                                 List<List<Answer>> multipleAnswer,
                                                 List<List<Discussion>> multipleDiscussion) throws SQLException {
         // Clear existing data
-        executeQueryJdbc("truncate answers;");
-        executeQueryJdbc("truncate discussions;");
+        executeQueryJdbc("truncate scrape.answers;");
+        executeQueryJdbc("truncate scrape.discussions;");
         Question q = Question(number, "1z0-071", doc);
         multipleQuestion.add(q);
 
@@ -315,8 +315,8 @@ public class Main {
                 .flatMap(List::stream) // Flattens Stream<List<Question>> into Stream<Question>
                 .collect(Collectors.toList());
 
-        executeQueryJdbc("truncate answers;");
-        executeQueryJdbc("truncate discussions;");
+        executeQueryJdbc("truncate scrape.answers;");
+        executeQueryJdbc("truncate scrape.discussions;");
 
         String insertQuestions = Question.insertMultiple(questions);
         executeQueryJdbc(insertQuestions);
@@ -384,8 +384,8 @@ public class Main {
                 .flatMap(List::stream) // Flattens Stream<List<Question>> into Stream<Question>
                 .collect(Collectors.toList());
 
-        executeQueryJdbc("truncate answers;");
-        executeQueryJdbc("truncate discussions;");
+        executeQueryJdbc("truncate scrape.answers;");
+        executeQueryJdbc("truncate scrape.discussions;");
 
         try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
             var insertQuestions = executor.submit(() -> Question.insertMultiple(questions));

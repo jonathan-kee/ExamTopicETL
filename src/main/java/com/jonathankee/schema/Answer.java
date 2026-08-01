@@ -50,7 +50,7 @@ public class Answer {
 
     public static String insertMultiple(List<Answer> answers) {
         String insertBoilerPlate = """
-                    INSERT INTO answers
+                    INSERT INTO scrape.answers
                     (number, question_number, question_exam, text, is_correct)
                     VALUES
                     """;

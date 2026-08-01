@@ -40,7 +40,7 @@ public class Question {
         String safeText2 = question.getText() != null ? question.getText().replace("'", "''") : "";
 
         String insert = """
-                    INSERT INTO questions
+                    INSERT INTO scrape.questions
                     (number, exam, text)
                     VALUES
                     (%d,'%s','%s');
@@ -50,7 +50,7 @@ public class Question {
 
     public static String insertMultiple(List<Question> questions) {
         String insertBoilerPlate = """
-                    INSERT INTO questions
+                    INSERT INTO scrape.questions
                     (number, exam, text)
                     VALUES
                     """;
