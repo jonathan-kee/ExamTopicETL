@@ -55,7 +55,7 @@ public class Main {
     }
 
     private static void downloadSeveralImagesDatabase() throws SQLException, InterruptedException {
-        List<Tuple> list = executeQueryJdbcResultImage("SELECT url FROM all_images_url;", 1);
+        List<Tuple> list = executeQueryJdbcResultImage("SELECT url FROM scrape.\"stg_viewAllImagesUrl\";", 1);
         for (int i = 0; i < list.size(); i++) {
             // Tuple fileName is null
             downloadImages(list.get(i).getUrl());
@@ -64,7 +64,7 @@ public class Main {
     }
 
     private static void downloadSeveralImagesDatabaseMultiThread() throws SQLException, InterruptedException {
-        List<Tuple> list = executeQueryJdbcResultImage("SELECT url FROM all_images_url;", 1);
+        List<Tuple> list = executeQueryJdbcResultImage("SELECT url FROM scrape.\"stg_viewAllImagesUrl\";", 1);
 
         int cpuCount = Runtime.getRuntime().availableProcessors();
         try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
