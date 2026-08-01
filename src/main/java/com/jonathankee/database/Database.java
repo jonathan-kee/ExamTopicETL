@@ -24,7 +24,7 @@ public class Database {
     }
 
     public static void executeQueryJdbc(String sql) throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
+        String url = "jdbc:postgresql://localhost:5432/exam_topic";
         try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123");
              ResultSet rs = conn.createStatement().executeQuery(sql)) {
 
@@ -35,7 +35,7 @@ public class Database {
     }
 
     public static List<Tuple> executeQueryJdbcResult(String sql, int... columnToGet) throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
+        String url = "jdbc:postgresql://localhost:5432/exam_topic";
         List<Tuple> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123")) {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -59,7 +59,7 @@ public class Database {
     }
 
     public static List<Tuple> executeQueryJdbcResultImage(String sql, int... columnToGet) throws SQLException {
-        String url = "jdbc:postgresql://localhost:5432/postgres";
+        String url = "jdbc:postgresql://localhost:5432/exam_topic";
         List<Tuple> list = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(url, "postgres", "abc123")) {
             try (PreparedStatement ps = conn.prepareStatement(sql)) {
