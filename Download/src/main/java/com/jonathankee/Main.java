@@ -63,7 +63,7 @@ public class Main {
     }
 
     private static void downloadSeveralDocumentsDatabase(String exam) throws SQLException, InterruptedException {
-        String sql = "SELECT number, link FROM questionslink WHERE exam = '" + exam + "';";
+        String sql = "SELECT number, link FROM scrape.\"questionslink\" WHERE exam = '" + exam + "';";
         List<Tuple> list = executeQueryJdbcResult(sql, 1, 2);
         for (int i = 0; i < list.size(); i++) {
             downloadDocument(list.get(i).getFileName(), list.get(i).getUrl());
@@ -72,7 +72,7 @@ public class Main {
     }
 
     private static void downloadSeveralDocumentsDatabaseMultiThread(String exam) throws SQLException, InterruptedException {
-        String sql = "SELECT number, link FROM questionslink WHERE exam = '" + exam + "';";
+        String sql = "SELECT number, link FROM scrape.\"questionslink\" WHERE exam = '" + exam + "';";
         List<Tuple> list = executeQueryJdbcResult(sql, 1, 2);
         int cpuCount = Runtime.getRuntime().availableProcessors();
         try (ExecutorService executor = Executors.newFixedThreadPool(cpuCount)) {
