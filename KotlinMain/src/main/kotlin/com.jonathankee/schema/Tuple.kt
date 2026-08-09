@@ -1,18 +1,7 @@
 package com.jonathankee.schema
 
-class Tuple {
-    var fileName: String
-    var url: String
-
-    constructor(fileName: String, url: String) {
-        this.fileName = fileName
-        this.url = url
-    }
-
-    constructor() {
-        this.fileName = ""
-        this.url = ""
-    }
+class Tuple (var fileName: String,
+             var url: String){
 
     override fun toString(): String {
         return "Tuple{" +

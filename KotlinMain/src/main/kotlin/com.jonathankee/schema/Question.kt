@@ -1,6 +1,8 @@
 package com.jonathankee.schema
 
-class Question(val number: Int, private val exam: String, private val text: String) {
+class Question(val number: Int,
+               private val exam: String,
+               private val text: String) {
     fun getExam(): String? {
         return exam
     }

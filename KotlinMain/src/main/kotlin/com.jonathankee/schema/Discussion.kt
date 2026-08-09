@@ -1,37 +1,11 @@
 package com.jonathankee.schema
 
-class Discussion {
-    var number: Int
-    var questionNumber: Int
-    private var questionExam: String
-    private var selectedAnswer: String
-    private var text: String
-    var upvote: Int
-
-    constructor(
-        number: Int,
-        questionNumber: Int,
-        questionExam: String,
-        selectedAnswer: String,
-        text: String,
-        upvote: Int
-    ) {
-        this.number = number
-        this.questionNumber = questionNumber
-        this.questionExam = questionExam
-        this.selectedAnswer = selectedAnswer
-        this.text = text
-        this.upvote = upvote
-    }
-
-    constructor() {
-        this.number = 0
-        this.questionNumber = 0
-        this.questionExam = ""
-        this.selectedAnswer = ""
-        this.text = ""
-        this.upvote = 0
-    }
+class Discussion (var number: Int,
+                  var questionNumber: Int,
+                  private var questionExam: String,
+                  private var selectedAnswer: String,
+                  private var text: String,
+                  var upvote: Int){
 
     fun setQuestionExam(questionExam: String) {
         this.questionExam = questionExam
