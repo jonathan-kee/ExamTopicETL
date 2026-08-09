@@ -18,6 +18,7 @@ class Question(val number: Int, private val exam: String, private val text: Stri
     }
 
     companion object {
+        @JvmStatic
         fun insertSingle(question: Question): String {
             // Replace ' with '' so SQL syntax doesn't break
             val safeText1 = if (question.getExam() != null) question.getExam()!!.replace("'", "''") else ""
@@ -33,6 +34,7 @@ class Question(val number: Int, private val exam: String, private val text: Stri
             return insert
         }
 
+        @JvmStatic
         fun insertMultiple(questions: List<Question>): String {
             val insertBoilerPlate = """
                     INSERT INTO scrape.questions

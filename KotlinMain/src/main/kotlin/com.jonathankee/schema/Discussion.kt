@@ -69,6 +69,7 @@ class Discussion {
     }
 
     companion object {
+        @JvmStatic
         fun insertMultiple(dicussions: List<Discussion>): String {
             val insertBoilerPlate = """
                     INSERT INTO scrape.discussions

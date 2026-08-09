@@ -26,6 +26,7 @@ class Answer(
     }
 
     companion object {
+        @JvmStatic
         fun insertMultiple(answers: List<Answer>): String {
             val insertBoilerPlate = """
                     INSERT INTO scrape.answers
