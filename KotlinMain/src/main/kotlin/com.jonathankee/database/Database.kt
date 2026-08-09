@@ -47,10 +47,10 @@ object Database {
                         val tuple = Tuple()
                         for (i in columnToGet.indices) {
                             if (columnToGet[i] == 1) {
-                                tuple.setFileName("document" + rs.getString(columnToGet[i]) + ".html")
+                                tuple.fileName = "document" + rs.getString(columnToGet[i]) + ".html"
                             }
                             if (columnToGet[i] == 2) {
-                                tuple.setUrl(rs.getString(columnToGet[i]))
+                                tuple.url = rs.getString(columnToGet[i])
                             }
                         }
                         list.add(tuple)
@@ -69,11 +69,11 @@ object Database {
             conn.prepareStatement(sql).use { ps ->
                 ps.executeQuery().use { rs ->
                     while (rs.next()) {
-                        val tuple = Tuple()
+                        val tuple:Tuple = Tuple()
                         for (i in columnToGet.indices) {
                             if (columnToGet[i] == 1) {
-                                tuple.setUrl(rs.getString(columnToGet[i]))
-                                tuple.setFileName(null)
+                                tuple.url = rs.getString(columnToGet[i])
+                                tuple.fileName = null
                             }
                         }
                         list.add(tuple)
