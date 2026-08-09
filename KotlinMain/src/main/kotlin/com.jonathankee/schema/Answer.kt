@@ -27,7 +27,7 @@ class Answer(
 
     companion object {
         @JvmStatic
-        fun insertMultiple(answers: List<Answer>): String {
+        fun insertMultiple(answers: List<Answer?>): String {
             val insertBoilerPlate = """
                     INSERT INTO scrape.answers
                     (number, question_number, question_exam, text, is_correct)
@@ -36,16 +36,19 @@ class Answer(
                     """.trimIndent()
 
 
-            val data = answers.stream().map { answer: Answer ->
+            val data = answers.stream().map { answer: Answer? ->
                 // Replace ' with '' so SQL syntax doesn't break
-                val safeText1 = if (answer.getQuestionExam() != null) answer.getQuestionExam()!!
-                    .replace("'", "''") else ""
-                val safeText2 = if (answer.getText() != null) answer.getText()!!.replace("'", "''") else ""
-                ("(" + answer.number + ","
-                        + answer.questionNumber + ","
+
+                // Use Kotlin Elvis operator ?:
+                val safeText1 = answer?.getQuestionExam()?.replace("'", "''") ?: ""
+                val safeText2 = answer?.getText()?.replace("'", "''") ?: ""
+
+
+                ("(" + answer?.number + ","
+                        + answer?.questionNumber + ","
                         + "'" + safeText1 + "'" + ","
                         + "'" + safeText2 + "'" + ","
-                        + answer.isCorrect + ")")
+                        + answer?.isCorrect + ")")
             }.toList()
 
             val sb = StringBuilder()
