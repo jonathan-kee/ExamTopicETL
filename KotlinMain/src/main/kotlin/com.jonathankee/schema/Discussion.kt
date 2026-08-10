@@ -1,11 +1,14 @@
 package com.jonathankee.schema
 
-class Discussion (var number: Int,
-                  var questionNumber: Int,
-                  private var questionExam: String,
-                  private var selectedAnswer: String,
-                  private var text: String,
-                  var upvote: Int){
+class Discussion (var number: Int?,
+                  var questionNumber: Int?,
+                  private var questionExam: String?,
+                  private var selectedAnswer: String?,
+                  private var text: String?,
+                  var upvote: Int?){
+
+    // Secondary no-argument constructor
+    constructor() : this(null, null, null, null, null,null)
 
     fun setQuestionExam(questionExam: String) {
         this.questionExam = questionExam
