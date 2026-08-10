@@ -118,7 +118,7 @@ object Main {
             val startInstant = Instant.now()
             // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
             // downloadSeveralDocumentsDatabaseMultiThreadJava(exam) // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
-            downloadSeveralDocumentsDatabase(exam)
+            downloadSeveralDocumentsDatabase(exam) // 5 seconds (Multi Threaded Coroutine)  435/44) = 87x speed up
             //singleDocument("document8.html");
             val endInstant = Instant.now()
             val duration = Duration.between(startInstant, endInstant)
