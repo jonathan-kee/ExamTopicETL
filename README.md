@@ -4,12 +4,17 @@
 
 2) Download the documents
 - java -jar /Users/jonathankee/examTopicScraper/static_page/Download/build/libs/Download-all.jar "1z0-071"
+- java -jar /Users/jonathankee/examTopicScraper/static_page/KotlinDownload/build/libs/KotlinDownload-1.0-SNAPSHOT-all.jar "1z0-071"
 
 3) Scrape the data from the documents
 - java -jar /Users/jonathankee/examTopicScraper/static_page/Document/build/libs/Document-all.jar
 
+This one needs to be audited because unreadable AI code:
+- java -jar /Users/jonathankee/examTopicScraper/static_page/KotlinDocument/build/libs/KotlinDocument-1.0-SNAPSHOT-all.jar
+
 4) Download the images
 - java -jar /Users/jonathankee/examTopicScraper/static_page/Image/build/libs/Image-all.jar
+- java -jar /Users/jonathankee/examTopicScraper/static_page/KotlinImage/build/libs/KotlinImage-1.0-SNAPSHOT-all.jar
 
 # Clear assets for testing
 cd /Users/jonathankee/examTopicScraper/static_page/src/main/resources
