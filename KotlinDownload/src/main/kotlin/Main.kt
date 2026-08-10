@@ -117,8 +117,8 @@ object Main {
             val exam = args[0]
             val startInstant = Instant.now()
             // downloadSeveralDocumentsDatabase();              // 435 seconds  (Single Threaded)
-            downloadSeveralDocumentsDatabaseMultiThreadJava(exam) // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
-
+            // downloadSeveralDocumentsDatabaseMultiThreadJava(exam) // 44 seconds   (Multi Threaded)    (435/44) = 9x speed up
+            downloadSeveralDocumentsDatabase(exam)
             //singleDocument("document8.html");
             val endInstant = Instant.now()
             val duration = Duration.between(startInstant, endInstant)
@@ -126,7 +126,6 @@ object Main {
             println("Formatted: " + duration.toSeconds() + " seconds")
         } else {
             println("Usage: java -jar /Users/jonathankee/examTopicScraper/static_page/Download/build/libs/Download-all.jar \"1z0-071\"")
-            test()
         }
     }
 
