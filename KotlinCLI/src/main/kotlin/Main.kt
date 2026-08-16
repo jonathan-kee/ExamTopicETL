@@ -7,7 +7,7 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
-// 1. Mark as suspend and explicitly define the IO dispatcher here
+// withContext(Dispatchers.IO) ensures this runs on a background thread optimized for I/O operations
 private suspend fun downloadDocument(fileName: String, urlString: String) = withContext(Dispatchers.IO) {
     val folderPath = "./sources_unprocessed"
 
@@ -18,37 +18,60 @@ private suspend fun downloadDocument(fileName: String, urlString: String) = with
         }
 
         val filePath = dir.resolve(fileName)
+        println("⬇️ Downloading: $urlString")
+        println("   Destination: ${filePath.toAbsolutePath()}")
+
         val url = URL(urlString)
 
-        // 2. Use byte streams and Files.copy to prevent binary file corruption
+        // Use raw byte streams to prevent corrupting binary data
         url.openStream().use { input ->
             Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING)
         }
 
-        println("File saved successfully to: ${filePath.toAbsolutePath()}")
+        println("✅ Successfully saved: $fileName")
+
     } catch (ex: IOException) {
-        System.err.println("Error downloading content from $urlString: ${ex.message}")
+        System.err.println("❌ I/O Error downloading $urlString: ${ex.message}")
+    } catch (ex: Exception) {
+        System.err.println("❌ Unexpected error downloading $urlString: ${ex.message}")
     }
 }
 
-fun main(args: Array<String>) = runBlocking {
+fun main(args: Array<String>) {
+    // 1. Immediately log that the program started to ensure the JVM is actually running it
+    println("▶️ CLI Started. Number of arguments received: ${args.size}")
     if (args.isNotEmpty()) {
-        // 3. Map arguments directly into a list of Pairs
-        val downloads = args.map { link ->
-            // Use startsWith instead of contains for safety
-            require(link.startsWith("https")) { "Invalid link (must be https): $link" }
+        println("   Arguments: ${args.joinToString(", ")}")
+    }
+
+    if (args.isEmpty()) {
+        println("⚠️ No arguments provided.")
+        println("Usage: java -jar KotlinCLI-1.0-SNAPSHOT-all.jar \"https://rest.fnar.net/exchange/cxpc/ALO.AI1\"")
+        return
+    }
+
+    // 2. runBlocking keeps the main thread alive until all inner coroutines finish
+    runBlocking {
+        args.forEach { link ->
+            // Validate the link before attempting to download
+            if (!link.startsWith("http")) {
+                System.err.println("⚠️ Skipping invalid link (must start with http/https): $link")
+                return@forEach // Acts like 'continue' in a standard for-loop
+            }
 
             val fileName = link.substringAfterLast("/")
-            fileName to link // Idiomatic Pair creation
-        }
+            if (fileName.isBlank()) {
+                System.err.println("⚠️ Could not extract filename from link: $link")
+                return@forEach
+            }
 
-        // 4. Launch child coroutines. runBlocking automatically waits for all of them.
-        downloads.forEach { (fileName, link) ->
+            // 3. Launch a concurrent coroutine for every valid link
             launch {
                 downloadDocument(fileName, link)
             }
         }
-    } else {
-        println("Usage: java -jar /KotlinCLI-1.0-SNAPSHOT-all.jar \"https://rest.fnar.net/exchange/cxpc/ALO.AI1\"")
     }
+
+    // 4. This will only print once every single download has finished or failed
+    println("⏹️ All tasks completed. Exiting program.")
 }
