@@ -8,6 +8,19 @@ import java.nio.file.Files
 import java.nio.file.Paths
 import java.nio.file.StandardCopyOption
 
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
+
+fun getTodayDateFileName(filename: Any, extension: Any): String {
+    val today = LocalDate.now()
+    val formatter = DateTimeFormatter.ofPattern("ddMMyyyy")
+    val ddMMyyyy = today.format(formatter)
+
+    println(ddMMyyyy) // Output: e.g., "16082026"
+
+    return "${filename}_${ddMMyyyy}${extension}"
+}
+
 // withContext(Dispatchers.IO) ensures this runs on a background thread optimized for I/O operations
 private suspend fun downloadDocument(rawFileName: String, urlString: String) = withContext(Dispatchers.IO) {
     val folderPath = "./sources_unprocessed"
@@ -37,19 +50,22 @@ private suspend fun downloadDocument(rawFileName: String, urlString: String) = w
             else -> "" // Fallback if the type is unknown or binary
         }
 
-        // 4. Append the extension automatically if it isn't already there
-        val finalFileName = if (rawFileName.endsWith(extension, ignoreCase = true) || extension.isEmpty()) {
-            rawFileName
+        // 4. Strip the extension if present to pass the base name to getTodayDateFileName
+        val baseFileName = if (extension.isNotEmpty() && rawFileName.endsWith(extension, ignoreCase = true)) {
+            rawFileName.substring(0, rawFileName.length - extension.length)
         } else {
-            rawFileName + extension
+            rawFileName
         }
+
+        // 5. Apply the getTodayDateFileName utility to format the final file name with date
+        val finalFileName = getTodayDateFileName(baseFileName, extension)
 
         val filePath = dir.resolve(finalFileName)
         println("⬇️ Downloading: $urlString")
         println("   Type Detected: ${contentType.ifEmpty { "Unknown" }}")
         println("   Destination: ${filePath.toAbsolutePath()}")
 
-        // 5. Download the stream data directly from the connection
+        // 6. Download the stream data directly from the connection
         connection.inputStream.use { input ->
             Files.copy(input, filePath, StandardCopyOption.REPLACE_EXISTING)
         }
@@ -78,12 +94,6 @@ fun main(args: Array<String>) {
     // runBlocking keeps the main thread alive until all inner coroutines finish
     runBlocking {
         args.forEach { link ->
-            // Validate the link before attempting to download
-//            if (!link.startsWith("http")) {
-//                System.err.println("⚠️ Skipping invalid link (must start with http/https): $link")
-//                return@forEach // Acts like 'continue' in a loop
-//            }
-
             val rawFileName = link.substringAfterLast("/")
             if (rawFileName.isBlank()) {
                 System.err.println("⚠️ Could not extract filename from link: $link")
