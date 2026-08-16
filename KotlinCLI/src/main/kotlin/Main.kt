@@ -79,10 +79,10 @@ fun main(args: Array<String>) {
     runBlocking {
         args.forEach { link ->
             // Validate the link before attempting to download
-            if (!link.startsWith("http")) {
-                System.err.println("⚠️ Skipping invalid link (must start with http/https): $link")
-                return@forEach // Acts like 'continue' in a loop
-            }
+//            if (!link.startsWith("http")) {
+//                System.err.println("⚠️ Skipping invalid link (must start with http/https): $link")
+//                return@forEach // Acts like 'continue' in a loop
+//            }
 
             val rawFileName = link.substringAfterLast("/")
             if (rawFileName.isBlank()) {
