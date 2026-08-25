@@ -501,8 +501,8 @@ object Main {
 
         // 5. BLOCKING JDBC I/O: Database truncate and write operations -> Dispatchers.IO
         withContext(Dispatchers.IO) {
-            Database.executeQueryJdbc("truncate scrape.answers;")
-            Database.executeQueryJdbc("truncate scrape.discussions;")
+            // Database.executeQueryJdbc("truncate scrape.answers;")
+            // Database.executeQueryJdbc("truncate scrape.discussions;")
 
             Database.executeQueryJdbc(insertQuestionsSql)
             Database.executeQueryJdbc(insertAnswersSql)
@@ -512,19 +512,24 @@ object Main {
 
     @Throws(SQLException::class, IOException::class)
     @JvmStatic
-     fun main(args: Array<String>) {
-        val startInstant = Instant.now()
-        // multipleDocuments();                             // 6 seconds    (Single Threaded)
-        // multipleDocumentsMultiThread() // 2 seconds    (Multi Threaded)    (6/2) = 3x speed up
+     fun main(args: Array<String> = arrayOf("1z0-071")) {
 
-        runBlocking {
-            multipleDocumentsCoroutine() // 1 seconds     (Multi Threaded / Coroutine)    (6/1) = 6x speed up
-        }
+         if(args.size > 0 ) {
+             val startInstant = Instant.now()
+             // multipleDocuments();                             // 6 seconds    (Single Threaded)
+             // multipleDocumentsMultiThread() // 2 seconds    (Multi Threaded)    (6/2) = 3x speed up
 
-        //singleDocument("document8.html");
-        val endInstant = Instant.now()
-        val duration = Duration.between(startInstant, endInstant)
-        println("Execution time: " + duration.toMillis() + " ms")
-        println("Formatted: " + duration.toSeconds() + " seconds")
+             runBlocking {
+                 multipleDocumentsCoroutine() // 1 seconds     (Multi Threaded / Coroutine)    (6/1) = 6x speed up
+             }
+
+             //singleDocument("document8.html");
+             val endInstant = Instant.now()
+             val duration = Duration.between(startInstant, endInstant)
+             println("Execution time: " + duration.toMillis() + " ms")
+             println("Formatted: " + duration.toSeconds() + " seconds")
+         } else {
+             println("Usage: java -jar /Users/jonathankee/examTopicScraper/static_page/KotlinDocument/build/libs/KotlinDocument-1.0-SNAPSHOT-all.jar \"1z0-071\"")
+         }
     }
 }
